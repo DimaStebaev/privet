@@ -22,7 +22,7 @@ namespace processor
     {
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
     }
 }
