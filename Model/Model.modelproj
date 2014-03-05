@@ -22,6 +22,13 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" Condition="'$(VSToolsPath)' != ''" />
   <ItemGroup>
+    <Content Include="precessot classes.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="precessot classes.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>precessot classes.classdiagram</DependentUpon>
+    </Content>
     <Folder Include="ModelDefinition\" />
     <Content Include="domain.classdiagram">
       <SubType>Content</SubType>
@@ -29,6 +36,20 @@
     <Content Include="domain.classdiagram.layout">
       <SubType>Content</SubType>
       <DependentUpon>domain.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="generator classes.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="generator classes.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>generator classes.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="interfaces.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="interfaces.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>interfaces.classdiagram</DependentUpon>
     </Content>
     <Content Include="ModelDefinition\Model.uml">
       <SubType>Content</SubType>
