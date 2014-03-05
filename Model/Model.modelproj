@@ -44,12 +44,12 @@
       <SubType>Content</SubType>
       <DependentUpon>generator classes.classdiagram</DependentUpon>
     </Content>
-    <Content Include="interfaces.classdiagram">
+    <Content Include="plugins.classdiagram">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="interfaces.classdiagram.layout">
+    <Content Include="plugins.classdiagram.layout">
       <SubType>Content</SubType>
-      <DependentUpon>interfaces.classdiagram</DependentUpon>
+      <DependentUpon>plugins.classdiagram</DependentUpon>
     </Content>
     <Content Include="ModelDefinition\Model.uml">
       <SubType>Content</SubType>
