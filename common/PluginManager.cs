@@ -85,6 +85,7 @@ namespace Common
                                 if (objInterface != null)
                                 {
                                     IPlugin plugin = (IPlugin)ass.CreateInstance(objType.FullName);
+                                    plugin.initialize();
                                     beans.Add(plugin);
 
                                     logger.Trace("Loaded class " + objType.FullName);
