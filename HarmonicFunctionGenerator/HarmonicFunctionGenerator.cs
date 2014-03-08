@@ -22,6 +22,13 @@ namespace HarmonicFunctionGenerator
                 throw new System.NotImplementedException();
             }
         }
+        public string name
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+        }
 	    public virtual Function Generate()
 	    {
 		    throw new System.NotImplementedException();

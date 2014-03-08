@@ -21,6 +21,14 @@ namespace Common
             }
         }
 
+        public string name
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
         public string extension { 
             get
             {

@@ -15,10 +15,8 @@ namespace Processor
 {
     public abstract class ChartProcessor : IProcessor
     {
-        public abstract string title
-        {
-            get;
-        }
+        public abstract string title { get; }
+        public abstract string name {get; }
         public virtual UIElement process(Function f)
         {
             throw new System.NotImplementedException();

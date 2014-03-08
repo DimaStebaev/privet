@@ -15,6 +15,8 @@ namespace Common
     {
 	    string title { get; }
 
+        string name { get; }   
+     
 	    void initialize();
 
 	    IList<Parameter> getParametersList();

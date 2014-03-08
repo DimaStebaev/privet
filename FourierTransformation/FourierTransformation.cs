@@ -18,11 +18,19 @@ namespace FourierTransformation
         {
             get { throw new NotImplementedException(); }
         }
+        public override string name
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+        }
 
         protected override Common.Function processFunction(Common.Function f)
         {
             throw new NotImplementedException();
         }
+
     }
 }
 
