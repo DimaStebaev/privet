@@ -61,10 +61,12 @@ namespace Generator
             minXTextBox.Tag = Parameter.Double("Левая граница", 0);
             maxXTextBox.Tag = Parameter.Double("Правая граница", 10);
             stepTextBox.Tag = Parameter.Double("Шаг", 0.1);
+            kTextBox.Tag = Parameter.Double("Коэффицент", 1);
 
             minXTextBox.Text = (minXTextBox.Tag as Parameter).defaultValue.ToString();
             maxXTextBox.Text = (maxXTextBox.Tag as Parameter).defaultValue.ToString();
             stepTextBox.Text = (stepTextBox.Tag as Parameter).defaultValue.ToString();
+            kTextBox.Text = (kTextBox.Tag as Parameter).defaultValue.ToString();
 
             refreshControlPanel();
 
@@ -95,13 +97,17 @@ namespace Generator
                 [0] as INoise;
             }
 
-            double minX = double.Parse(minXTextBox.Text), maxX = double.Parse(maxXTextBox.Text), step = double.Parse(stepTextBox.Text);
+            double minX = double.Parse(minXTextBox.Text)
+                , maxX = double.Parse(maxXTextBox.Text)
+                , step = double.Parse(stepTextBox.Text)
+                , k = double.Parse(kTextBox.Text);
 
             try
             {
                 generatedFunction = gm.generate(minX, maxX, step
                                         , generator, getParameters(generatorParameters)
                                         , noise, getParameters(noiseParameters)
+                                        , k
                                         );
                 drawFunction(generatedFunction);
             }
@@ -226,6 +232,10 @@ namespace Generator
                 return false;
             }
             if (!validateTextBox(stepTextBox))
+            {
+                return false;
+            }
+            if (!validateTextBox(kTextBox))
             {
                 return false;
             }

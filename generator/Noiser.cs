@@ -14,7 +14,7 @@ namespace Generator
 {
     public class Noiser
     {
-        public virtual Function addNoise(Function f, INoise noise)
+        public virtual Function addNoise(Function f, INoise noise, double k)
         {
             throw new System.NotImplementedException();
         }

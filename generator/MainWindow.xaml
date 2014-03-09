@@ -54,6 +54,10 @@
                 </StackPanel>
             </StackPanel>
             <TextBlock Text="Погрешность" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Коэффицент" Width="90" Margin="5" VerticalAlignment="Center"/>
+                <TextBox x:Name="kTextBox" Width="60" Margin="5"></TextBox>
+            </StackPanel>
             <ComboBox x:Name="noisesComboBox" Margin="5">
                 <ComboBoxItem Content="first" IsSelected="True"/>
                 <ComboBoxItem Content="second"/>
