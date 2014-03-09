@@ -16,14 +16,14 @@ namespace Common
     {
         IList<IPlugin> beans = new List<IPlugin>();
         static Logger logger = LogManager.GetCurrentClassLogger();
-        static PluginManager singleton = null;        
+        static PluginManager singleton = null;          
 
         /// <summary>
         /// Конструктор по умолчанию класса PluginManager
         /// </summary>
         private PluginManager()
-        {            
-            
+        {
+            refresh();
         }
 
         /// <summary>

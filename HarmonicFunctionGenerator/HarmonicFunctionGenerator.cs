@@ -29,7 +29,7 @@ namespace HarmonicFunctionGenerator
                 throw new System.NotImplementedException();
             }
         }
-	    public virtual Function Generate()
+        public virtual Function Generate(double minX, double maxX, double step)
 	    {
 		    throw new System.NotImplementedException();
 	    }

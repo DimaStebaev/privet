@@ -11,30 +11,99 @@ using System.Text;
 
 namespace Common
 {
-    public class Parameter
+    /// <summary>
+    /// Содержит метаданные о параметре
+    /// </summary>
+    public abstract class Parameter
     {
+        /// <summary>
+        /// Тип значения параметра
+        /// </summary>
         public virtual Type type
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Название параметра, используется в UI
+        /// </summary>
         public virtual string title
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Значение параметра по умолчанию
+        /// </summary>
         public virtual Object defaultValue
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="type">Тип значения параметра</param>
+        /// <param name="title">Название параметра</param>
+        /// <param name="defaultValue">Значение параметра по умолчанию</param>
         public Parameter(Type type, string title, Object defaultValue)
         {
+            this.type = type;
+            this.title = title;
+            this.defaultValue = defaultValue;
         }
 
-    }
+        /// <summary>
+        /// Возвращает вещественный параметр
+        /// </summary>
+        /// <param name="title">Название параметра</param>
+        /// <param name="defaultValue">Значение по умолчанию</param>
+        /// <returns>Вещественный параметр</returns>
+        public static Parameter Double(string title, double defaultValue)
+        {
+            return new DoubleParameter(title, defaultValue);
+        }        
+
+        /// <summary>
+        /// Проверяет, возмодно ли преобразовать строку в значение параметра
+        /// </summary>
+        /// <param name="value">Строка со значением параметра</param>
+        /// <returns>True, если возможно, False, если не возможно</returns>        
+        public abstract bool validate(string value);
+
+        /// <summary>
+        /// Превращает строку в значение параметра
+        /// </summary>
+        /// <param name="value">Строка со значением</param>
+        /// <returns>Значение параметра</returns>
+        public abstract Object parse(string value);
+
+        /// <summary>
+        /// Вещественный параметр
+        /// </summary>
+        private class DoubleParameter : Parameter
+        {
+            public DoubleParameter(string title, double defaultValue)
+                :base(typeof(double), title, defaultValue)
+            {
+               
+            }
+            public override bool validate(string value)
+            {
+                double x;
+                return double.TryParse(value, out x);
+            }
+
+            public override object parse(string value)
+            {
+                if (!validate(value)) throw new ArgumentException("Argument value " + value + " can not be parsed");
+
+                return double.Parse(value);
+            }
+        }
+    }    
 }
 

@@ -15,7 +15,7 @@ namespace Generator
 
     public interface IGenerator : IPlugin
     {
-        Function Generate();
+        Function Generate(double minX, double maxX, double step);
 
     }
 
