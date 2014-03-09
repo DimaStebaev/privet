@@ -45,6 +45,14 @@ namespace Common
         }
 
         /// <summary>
+        /// Количество значений функции
+        /// </summary>
+        public virtual int length
+        {
+            get { return values.Length; }
+        }
+
+        /// <summary>
         /// Вичисляет значение функции в точке x
         /// </summary>
         /// <param name="x">Значение аргумента функции</param>
@@ -82,6 +90,23 @@ namespace Common
             double k = (x - leftX) / (rightX - leftX);            
 
             return values[leftIndex] + (values[rightIndex] - values[leftIndex]) * k;
+        }
+
+        /// <summary>
+        /// Индексатор, аналог перегрузки оператора []
+        /// </summary>
+        /// <param name="index">Значение индекса </param>
+        /// <returns>Значение функции по индексу</returns>
+        public double this[int index]
+        {
+            get
+            {
+                return values[index];
+            }
+            set
+            {
+                values[index] = value;
+            }
         }
 
         /// <summary>
