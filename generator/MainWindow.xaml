@@ -16,7 +16,13 @@
         
         <Menu Grid.ColumnSpan="2" VerticalAlignment="Top" Width="auto">
             <MenuItem Header="Файл">
-                <MenuItem Header="Выход"/>
+                <MenuItem Header="Открыть..." Click="MenuItemOpen_Click"/>
+                <MenuItem x:Name="saveAsMenuItem" Header="Сохранить как..." Click="MenuItemSaveAs_Click" IsEnabled="False"/>  
+                <Separator/>
+                <MenuItem Header="Выход" Click="MenuItemExit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Интсрументы">
+                <MenuItem Header="Обновить плагины" Click="MenuItemRefreshPlugins_Click"/>
             </MenuItem>
         </Menu>
         

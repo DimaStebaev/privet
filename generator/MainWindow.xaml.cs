@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Research.DynamicDataDisplay;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
+using Microsoft.Win32;
 
 using NLog;
 using Common;
@@ -27,7 +28,20 @@ namespace Generator
     {
         static Logger logger = LogManager.GetCurrentClassLogger();
         PluginManager pluginManager = PluginManager.getPluginManager();
-        Function generatedFunction = null;
+        Function _generatedFunction = null;
+
+        Function generatedFunction
+        {
+            get
+            {
+                return _generatedFunction;
+            }
+            set
+            {
+                _generatedFunction = value;
+                saveAsMenuItem.IsEnabled = (_generatedFunction != null);
+            }
+        }
 
         /// <summary>
         /// Конструктор
@@ -389,6 +403,127 @@ namespace Generator
         private void saveToFile(Function f, string filename)
         {
             throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Выход"
+        /// </summary>        
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Открыть..."
+        /// </summary>  
+        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            IList<IPlugin> plugins = pluginManager.getBeans(typeof(ISerializer));
+
+            if(plugins.Count<1)
+            {
+                MessageBox.Show("Невозвожно загрузить функцию, так как отсутствуют соответствующие плагины");
+                logger.Error("Serializers are missing");
+                return;
+            }
+
+            dialog.Filter = "Файл с функцией|";
+            bool first = true;
+            foreach(IPlugin plugin in plugins)
+            {
+                ISerializer s = plugin as ISerializer;
+
+                if(first)
+                    first = false;
+                else
+                    dialog.Filter += ";";
+
+                dialog.Filter += "*." + s.extension;
+            }
+
+            Nullable<bool> result = dialog.ShowDialog();
+            if(result == true)
+            {
+                String filename = dialog.FileName;
+                string[] splitted = filename.Split('.');
+                string ext = splitted[splitted.Length - 1];
+
+                foreach(IPlugin plugin in plugins)
+                {
+                    ISerializer s = plugin as ISerializer;
+                    if(s.extension.Equals(ext))
+                    {
+                        generatedFunction = s.deserialize(filename);
+                        return;
+                    }
+                }
+
+                logger.Error("Loading function error");
+                MessageBox.Show("Ошибка во время загрузки функции");
+            }
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Сохранить как..."
+        /// </summary>  
+        private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+
+            IList<IPlugin> plugins = pluginManager.getBeans(typeof(ISerializer));
+
+            if (plugins.Count < 1)
+            {
+                MessageBox.Show("Невозвожно сохранить функцию, так как отсутствуют соответствующие плагины");
+                logger.Error("Serializers are missing");
+                return;
+            }
+
+            dialog.Filter = "Файл с функцией|";
+            bool first = true;
+            foreach (IPlugin plugin in plugins)
+            {
+                ISerializer s = plugin as ISerializer;
+
+                if (first)
+                    first = false;
+                else
+                    dialog.Filter += ";";
+
+                dialog.Filter += "*." + s.extension;
+            }
+
+            Nullable<bool> result = dialog.ShowDialog();
+            if (result == true)
+            {
+                String filename = dialog.FileName;
+                string[] splitted = filename.Split('.');
+                string ext = splitted[splitted.Length - 1];
+
+                foreach (IPlugin plugin in plugins)
+                {
+                    ISerializer s = plugin as ISerializer;
+                    if (s.extension.Equals(ext))
+                    {
+                        s.serialize(generatedFunction, filename);
+                        return;
+                    }
+                }
+
+                logger.Error("Saving function error");
+                MessageBox.Show("Ошибка при сохранении функции");
+            }
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Обновить плагины"
+        /// </summary>  
+        private void MenuItemRefreshPlugins_Click(object sender, RoutedEventArgs e)
+        {
+            pluginManager.refresh();
+            refreshControlPanel();
         }
     }
 }
