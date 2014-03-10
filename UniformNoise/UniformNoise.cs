@@ -15,9 +15,15 @@ using Generator;
 
 namespace UniformNoise
 {
+    /// <summary>
+    /// Генератор равномерной случайной величены, с Мат. Ож. M=0 и Дисперсией, D=1
+    /// </summary>
     public class UniformNoise : INoise
     {
-        private Random rand;    //pseudo-random number generator
+        /// <summary>
+        /// Генератор псевдо случайных чисел
+        /// </summary>
+        private Random rand;
 
         public string title
         {
@@ -33,27 +39,47 @@ namespace UniformNoise
                 return "UniformNoise";
             }
         }
+        
+        /// <summary>
+        /// Генерирует равномерную случайную величену
+        /// </summary>
+        /// <returns>Случайную величену</returns>
 	    public virtual double getDeviation()
 	    {
             return (rand.NextDouble() * 2 - 1) * Math.Sqrt(3);
 	    }
 
+        /// <summary>
+        /// Возвращает список параметров равномерного распределения
+        /// </summary>
+        /// <returns>Список параметров</returns>
 	    public virtual IList<Parameter> getParametersList()
 	    {
-            List<Parameter> p = new List<Parameter>();
             return null;
 	    }
 
+        /// <summary>
+        /// Инициализирует параметры
+        /// </summary>
+        /// <param name="parameters">Список параметров</param>
 	    public virtual void setup(IList<Object> parameters)
 	    {
             //throw new ArgumentException("Not available argument");
 	    }
 
+        /// <summary>
+        /// Инициализирует генератор псевдо случайных велечин
+        /// </summary>
 	    public virtual void initialize()
 	    {
             rand = new Random();
 	    }
 
+        /// <summary>
+        /// Проверяет подходят ли параметры для данного модуля
+        /// </summary>
+        /// <param name="parameters">Список параметров</param>
+        /// <returns>Подходят / не подходят</returns>
         public bool checkParametersList(IList<Object> parameters)
         {
             if (parameters.Count != 0)
