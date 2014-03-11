@@ -18,20 +18,25 @@ namespace EnergyCalculation
         {
             get
             {
-                throw new System.NotImplementedException();
+                return "Удельная энергия";
             }
         }
         public override string name
         {
             get
             {
-                throw new System.NotImplementedException();
+                return "EnergyCalculation";
             }
-        }      
-
+        }     
+ 
+        /// <summary>
+        /// Вычисление интеграла
+        /// </summary>
+        /// <param name="f">Подинтегральная функция, возведенная в квадрат</param>
+        /// <returns>Значение интеграла</returns>
         protected override double processFunction(Common.Function f)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
     }
 }

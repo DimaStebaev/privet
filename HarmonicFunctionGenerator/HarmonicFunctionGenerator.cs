@@ -14,7 +14,7 @@ using Common;
 namespace HarmonicFunctionGenerator
 {   
     /// <summary>
-    /// Генератор гармонической составной функции, из трех синусоид
+    /// Генератор гармонической функции
     /// </summary>
     public class HarmonicFunctionGenerator : IGenerator
     {
@@ -27,7 +27,7 @@ namespace HarmonicFunctionGenerator
         {
             get
             {
-                return "Гармоническая составная функция из трех синусоид";
+                return "Гармоническая функция";
             }
         }
         public string name
@@ -39,12 +39,12 @@ namespace HarmonicFunctionGenerator
         }
 
         /// <summary>
-        /// Генерирует гармоническую составную функцию
+        /// Генерирует гармоническую функцию
         /// </summary>
         /// <param name="minX">Минимальное значение аргумента</param>
         /// <param name="maxX">Максимальное значение аргумента</param>
         /// <param name="step">Шаг аргумента</param>
-        /// <returns>Гармоническую составную функцию</returns>
+        /// <returns>Гармоническую функцию</returns>
         public virtual Function Generate(double minX, double maxX, double step)
 	    {
             Function result = new Function();

@@ -16,7 +16,7 @@ using Generator;
 namespace UniformNoise
 {
     /// <summary>
-    /// Генератор равномерной случайной величены, с Мат. Ож. M=0 и Дисперсией, D=1
+    /// Генератор равномерной случайной величены, с Мат. Ож. M=0 и Дисперсией D=1
     /// </summary>
     public class UniformNoise : INoise
     {
@@ -79,7 +79,7 @@ namespace UniformNoise
         /// Проверяет подходят ли параметры для данного модуля
         /// </summary>
         /// <param name="parameters">Список параметров</param>
-        /// <returns>Подходят / не подходят</returns>
+        /// <returns>Успех / ошибка</returns>
         public bool checkParametersList(IList<Object> parameters)
         {
             if (parameters.Count != 0)
