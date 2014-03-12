@@ -285,7 +285,7 @@ namespace Generator
             {
                 IList<IPlugin> targetNoise
                     = pluginManager.getBeans(typeof(INoise)
-                        , (noisesComboBox.SelectedItem as ComboBoxItem).Content as string
+                        , (noisesComboBox.SelectedItem as ComboBoxItem).Tag as string
                       );
 
                 if (targetNoise.Count != 1)
