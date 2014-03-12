@@ -55,7 +55,8 @@ namespace UniformNoise
         /// <returns>Список параметров</returns>
 	    public virtual IList<Parameter> getParametersList()
 	    {
-            return null;
+            List<Parameter> p = new List<Parameter>();
+            return p;
 	    }
 
         /// <summary>

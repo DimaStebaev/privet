@@ -68,9 +68,9 @@ namespace HarmonicFunctionGenerator
 	    public virtual IList<Parameter> getParametersList()
 	    {
             List<Parameter> p = new List<Parameter>();
-            Parameter A = Parameter.Double("Частота 1й синусоиды", 1);
+            Parameter A = Parameter.Double("Частота 1й синусоиды", 3);
             Parameter B = Parameter.Double("Частота 2й синусоиды", 2);
-            Parameter C = Parameter.Double("Частота 3й синусоиды", 3);
+            Parameter C = Parameter.Double("Частота 3й синусоиды", 1);
             p.Add(A);
             p.Add(B);
             p.Add(C);
