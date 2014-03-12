@@ -31,14 +31,14 @@ namespace NormalNoise
         {
             get
             {
-                throw new System.NotImplementedException();
+                return "Нормальное распределение";
             }
         }
         public string name
         {
             get
             {
-                throw new System.NotImplementedException();
+                return "normal";
             }
         }
         #endregion
@@ -74,22 +74,22 @@ namespace NormalNoise
 
 	    public virtual IList<Parameter> getParametersList()
 	    {
-		    throw new System.NotImplementedException();
+            return new List<Parameter>();
 	    }
 
 	    public virtual void setup(IList<Object> parameters)
 	    {
-		    throw new System.NotImplementedException();
+		    
 	    }
 
 	    public virtual void initialize()
 	    {
-		    throw new System.NotImplementedException();
+		    
 	    }
 
         public bool checkParametersList(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+            return true;
         }
         #endregion
 
