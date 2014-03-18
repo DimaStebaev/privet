@@ -62,7 +62,7 @@ namespace Common
 
             string lineToWrite = String.Empty;
 
-            for (int i = 0; i < f.length; i++)
+            for (int i = 0; i < f.Length; i++)
             {
                 lineToWrite = f[i].ToString() + "," + f.getValue(f[i]);
                 fileStream.WriteLine(lineToWrite);

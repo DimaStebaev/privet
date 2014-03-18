@@ -22,7 +22,7 @@ namespace Generator
         {
             Function result = new Function();
             result.setup(f.minX, f.maxX, f.step);
-            for (int i = 0; i < f.length; i++)
+            for (int i = 0; i < f.Length; i++)
                 result[i] = f[i] + k * f[i] * noise.getDeviation();
             return result;
         }
