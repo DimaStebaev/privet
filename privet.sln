@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uniformNoise", "UniformNois
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sinGenerator", "sinGenerator\sinGenerator.csproj", "{07AA516B-C990-46CF-8E94-6AAC8EDF4654}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSVSerializer", "CSVSerializer\CSVSerializer.csproj", "{393BCD45-BE60-4AC8-88FE-7C5BEE5530A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{07AA516B-C990-46CF-8E94-6AAC8EDF4654}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07AA516B-C990-46CF-8E94-6AAC8EDF4654}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07AA516B-C990-46CF-8E94-6AAC8EDF4654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{393BCD45-BE60-4AC8-88FE-7C5BEE5530A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{393BCD45-BE60-4AC8-88FE-7C5BEE5530A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{393BCD45-BE60-4AC8-88FE-7C5BEE5530A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{393BCD45-BE60-4AC8-88FE-7C5BEE5530A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

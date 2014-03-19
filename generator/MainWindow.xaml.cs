@@ -92,18 +92,18 @@ namespace Generator
 
             try
             {
-                Function withoutNoise  = gm.generate(minX, maxX, step
+                EtalonFunction  = gm.generate(minX, maxX, step
                                         , generator, generatorSelector.getPluginParametersValues()
                                         , null, null
                                         , k
                                         );
-                Function withNoise = gm.generate(minX, maxX, step
+                generatedFunction = gm.generate(minX, maxX, step
                                         , generator, generatorSelector.getPluginParametersValues()
                                         , noise, noiseSelector.getPluginParametersValues()
                                         , k
                                         );
 
-                drawFunction(withoutNoise, withNoise);
+                drawFunction(EtalonFunction, generatedFunction);
             }
             catch (Exception ex)
             {
@@ -120,7 +120,7 @@ namespace Generator
         PluginSelector noiseSelector = null;
         static Logger logger = LogManager.GetCurrentClassLogger();
         PluginManager pluginManager = PluginManager.getPluginManager();
-        Function _generatedFunction = null;
+        Function _generatedFunction = null;        
 
         Function generatedFunction
         {
@@ -133,6 +133,11 @@ namespace Generator
                 _generatedFunction = value;
                 saveAsMenuItem.IsEnabled = (_generatedFunction != null);
             }
+        }
+
+        Function EtalonFunction
+        {
+            get ; set;
         }
 
         #endregion  
@@ -296,6 +301,8 @@ namespace Generator
                     if(s.extension.Equals(ext))
                     {
                         generatedFunction = s.deserialize(filename);
+                        EtalonFunction = null;
+                        drawFunction(EtalonFunction, generatedFunction);
                         return;
                     }
                 }
