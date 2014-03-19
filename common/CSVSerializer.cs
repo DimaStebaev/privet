@@ -15,7 +15,6 @@ namespace Common
     public class CSVSerializer : ISerializer
     {
         #region Private Members
-        private string mDelimeter = ",";
         private List<double> mXList;
         private List<double> mYList;
         #endregion
