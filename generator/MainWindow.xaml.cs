@@ -142,6 +142,16 @@ namespace Generator
             errors.AddRange(generatorSelector.getErrors());
             errors.AddRange(noiseSelector.getErrors());
 
+            try
+            {
+                IList<Object> param = noiseForm.getValues();
+                double k = (double)param[0];
+                if (k < 0 || k > 1) errors.Add("Коэффицент погрешности должен находиться в пределах от 0 до 1");
+            }catch(ArgumentException e)
+            {
+                //пользователь неверно ввёл коэффицент K
+            }
+
             if (errors.Count > 0)
             {
                 string errorMessage = "";
