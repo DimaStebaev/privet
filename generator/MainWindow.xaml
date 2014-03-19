@@ -83,7 +83,20 @@
         </StackPanel>
         
         <d3:ChartPlotter x:Name="chart" Grid.Column="1" Grid.Row="1">
-            <d3:LineGraph x:Name="functionGraph" Stroke="Blue" StrokeThickness="3"/>
+            <d3:LineGraph x:Name="functionGraph" Stroke="Black" StrokeThickness="1">
+                <d3:LineGraph.LinePen>
+                    <Pen Brush="Black" Thickness="1">
+                        <Pen.DashStyle>
+                            <DashStyle Dashes="5"/>
+                        </Pen.DashStyle>
+                    </Pen>
+                </d3:LineGraph.LinePen>
+            </d3:LineGraph>
+            <d3:MarkerPointsGraph x:Name="noisedFunctionGraph">
+                <d3:MarkerPointsGraph.Marker>
+                    <d3:CirclePointMarker Fill="Blue" Size="3"/>
+                </d3:MarkerPointsGraph.Marker>
+            </d3:MarkerPointsGraph>
         </d3:ChartPlotter>
 
     </Grid>

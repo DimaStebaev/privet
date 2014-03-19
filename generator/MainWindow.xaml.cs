@@ -53,7 +53,7 @@ namespace Generator
             general.Add(Parameter.Double("Шаг", 0.1));            
 
             List<Parameter> noise = new List<Parameter>();
-            noise.Add(Parameter.Double("Коэффицент", 1));
+            noise.Add(Parameter.Double("Коэффицент", 0.3));
 
             generalForm = new Form(general);
             generalFormControl.Content = generalForm;
@@ -92,12 +92,18 @@ namespace Generator
 
             try
             {
-                generatedFunction = gm.generate(minX, maxX, step
+                Function withoutNoise  = gm.generate(minX, maxX, step
+                                        , generator, generatorSelector.getPluginParametersValues()
+                                        , null, null
+                                        , k
+                                        );
+                Function withNoise = gm.generate(minX, maxX, step
                                         , generator, generatorSelector.getPluginParametersValues()
                                         , noise, noiseSelector.getPluginParametersValues()
                                         , k
                                         );
-                drawFunction(generatedFunction);
+
+                drawFunction(withoutNoise, withNoise);
             }
             catch (Exception ex)
             {
@@ -195,27 +201,46 @@ namespace Generator
 
         /// <summary>
         /// Отображает функцию f на графике
-        /// </summary>
-        private void drawFunction(Function f)
-        {
-            chart.LegendVisible = false;
-
-            if (f == null) return;
-
-            LinkedList<double> x = new LinkedList<double>(), y = new LinkedList<double>();
-
-            for(double _x = f.minX; _x < f.maxX + f.step/2; _x+=f.step)
-            {
-                x.AddLast(_x);
-                y.AddLast(f.getValue(_x));
-            }                       
+        /// </summary>        
+        private void drawFunction(Function f, Function noisedF)
+        { 
             
-            var xDataSource = x.AsXDataSource();
-            var yDataSource = y.AsYDataSource();
+            if(f!=null)
+            {
+                LinkedList<double> x = new LinkedList<double>(), y = new LinkedList<double>();
 
-            CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);            
-            functionGraph.DataSource = compositeDataSource;
+                for (double _x = f.minX; _x < f.maxX + f.step / 2; _x += f.step)
+                {
+                    x.AddLast(_x);
+                    y.AddLast(f.getValue(_x));
+                }
 
+                var xDataSource = x.AsXDataSource();
+                var yDataSource = y.AsYDataSource();
+
+                CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
+                functionGraph.DataSource = compositeDataSource;                
+            }
+
+            if (noisedF!=null)
+            {
+                LinkedList<double> x = new LinkedList<double>(), y = new LinkedList<double>();
+
+                for (double _x = noisedF.minX; _x < noisedF.maxX + noisedF.step / 2; _x += noisedF.step)
+                {
+                    x.AddLast(_x);
+                    y.AddLast(noisedF.getValue(_x));
+                }
+
+                var xDataSource = x.AsXDataSource();
+                var yDataSource = y.AsYDataSource();
+
+                CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
+
+                noisedFunctionGraph.DataSource = compositeDataSource;                
+            }           
+
+            chart.LegendVisible = false;
             chart.FitToView();
         }        
 
