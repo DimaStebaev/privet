@@ -144,6 +144,32 @@ namespace Generator
 
             try
             {
+                IList<Object> param = generalForm.getValues();
+                double step = (double)param[2];
+
+                if (step < 0) errors.Add("Шаг должен быть положительным");
+                else if (step < GlobalConstants.Precision) errors.Add("Шаг слишком маленький");
+            }
+            catch (ArgumentException e)
+            {
+                //пользователь неверно ввёл step
+            }
+
+            try
+            {
+                IList<Object> param = generalForm.getValues();
+                double minX = (double)param[0]
+                    , maxX = (double)param[1]
+                    , step = (double)param[2];
+
+                if (maxX - minX < step + GlobalConstants.Precision) errors.Add("Шаг слижком большой");
+            }catch(ArgumentException e)
+            {
+                //пользователь неверно ввёл minX, maxX или step
+            }
+
+            try
+            {
                 IList<Object> param = noiseForm.getValues();
                 double k = (double)param[0];
                 if (k < 0 || k > 1) errors.Add("Коэффицент погрешности должен находиться в пределах от 0 до 1");
