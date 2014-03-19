@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using Common;
+using Microsoft.Research.DynamicDataDisplay;
+using Microsoft.Research.DynamicDataDisplay.DataSources;
 
 namespace Processor
 {
@@ -19,7 +21,25 @@ namespace Processor
         public abstract string name {get; }
         public virtual UIElement process(Function f)
         {
-            throw new System.NotImplementedException();
+            if (f == null) return null;
+
+            LineGraph functionGraph = new LineGraph();
+
+            LinkedList<double> x = new LinkedList<double>(), y = new LinkedList<double>();
+
+            for (double _x = f.minX; _x < f.maxX + f.step / 2; _x += f.step)
+            {
+                x.AddLast(_x);
+                y.AddLast(f.getValue(_x));
+            }
+
+            var xDataSource = x.AsXDataSource();
+            var yDataSource = y.AsYDataSource();
+
+            CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
+            functionGraph.DataSource = compositeDataSource;
+
+            return (UIElement)functionGraph;
         }
 
         public void initialize()

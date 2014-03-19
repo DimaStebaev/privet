@@ -66,6 +66,10 @@ namespace Common
         {            
             beans.Clear();
 
+            //Проверка существования папки plugins, при ее отсутсвии создание
+            if (!Directory.Exists("plugins"))
+                Directory.CreateDirectory("plugins");
+
             foreach (string dllFileName in Directory.GetFileSystemEntries("plugins/", "*.dll"))            
                 
                 try

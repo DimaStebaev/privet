@@ -12,8 +12,16 @@ using Processor;
 
 namespace EnergyCalculation
 {
+    /// <summary>
+    /// Модуль подсчета удельной енергии
+    /// Реализованный методом Монте-Карло
+    /// </summary>
     public class EnergyCalculation : ScalarProcessor
     {
+        private Random rand = new Random();
+        private int maxCount = 5000000;         // Максимальное количество итераций
+        private double maxTime = 200;           // Максимальное время работы, в миллисекундах
+
         public override string title
         {
             get
@@ -32,11 +40,25 @@ namespace EnergyCalculation
         /// <summary>
         /// Вычисление интеграла
         /// </summary>
-        /// <param name="f">Подинтегральная функция, возведенная в квадрат</param>
-        /// <returns>Значение интеграла</returns>
+        /// <param name="f">Функция для интегрирования</param>
+        /// <returns>Удельную енергию, значение интеграла</returns>
         protected override double processFunction(Common.Function f)
         {
-            throw new System.NotImplementedException();
+            double energy = 0;
+            int i = 0;
+            DateTime start = DateTime.Now;
+            TimeSpan time = start - DateTime.Now;
+
+            while(i < maxCount && time.Milliseconds < maxTime)
+            {
+                double x = f.minX + (f.maxX-f.minX) * rand.NextDouble();
+                energy += Math.Pow(f.getValue(x), 2);
+                i++;
+                if (i % 1000 == 0)
+                    time = start - DateTime.Now;
+            }
+          
+            return energy / i;
         }
     }
 }

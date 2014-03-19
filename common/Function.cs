@@ -47,7 +47,7 @@ namespace Common
         /// <summary>
         /// Количество значений функции
         /// </summary>
-        public virtual int length
+        public virtual int Length
         {
             get { return values.Length; }
         }
