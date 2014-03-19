@@ -46,7 +46,7 @@ namespace sinGenerator
 
         public virtual void setup(IList<Object> parameters)
         {
-            if (!checkParametersList(parameters))
+            if (checkParametersList(parameters).Count > 0)
                 throw new Exception("Bad parameter");
 
             a = (double)parameters[0];
@@ -57,13 +57,22 @@ namespace sinGenerator
             
         }
 
-        public bool checkParametersList(IList<Object> parameters)
+        public IList<string> checkParametersList(IList<Object> parameters)
         {
-            if (parameters.Count != 1) return false;
-            if (!(parameters[0] is double)) return false;
+            List<string> errors = new List<string>();
+            if (parameters.Count != 1) errors.Add("Неправильное количество параметров");
+
+            if (parameters.Count < 1) return errors;
+
+            if (!(parameters[0] is double))
+            {
+                errors.Add("Частота должна быть вещественным числом");
+                return errors;
+            }
+
             double a = (double)parameters[0];
-            if (a < 1e-6) return false;
-            return true;
+            if (a < 1e-6) errors.Add("Частота должна быть строго больше нуля");
+            return errors;
         }
     }
 }

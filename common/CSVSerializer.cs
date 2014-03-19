@@ -50,7 +50,7 @@ namespace Common
             throw new System.NotImplementedException();
         }
 
-        public bool checkParametersList(IList<Object> parameters)
+        public IList<string> checkParametersList(IList<Object> parameters)
         {
             throw new System.NotImplementedException();
         }

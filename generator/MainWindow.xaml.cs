@@ -26,6 +26,92 @@ namespace Generator
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Public methods
+
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        public MainWindow()
+        {
+            InitializeComponent();            
+
+            refreshControlPanel();
+
+            chart.LegendVisible = false;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Перестраивает панель с формами
+        /// </summary>
+        private void refreshControlPanel()
+        {
+            List<Parameter> general = new List<Parameter>();
+            general.Add(Parameter.Double("Левая граница", 0));
+            general.Add(Parameter.Double("Правая граница", 10));
+            general.Add(Parameter.Double("Шаг", 0.1));            
+
+            List<Parameter> noise = new List<Parameter>();
+            noise.Add(Parameter.Double("Коэффицент", 1));
+
+            generalForm = new Form(general);
+            generalFormControl.Content = generalForm;
+
+            generatorSelector = new PluginSelector(typeof(IGenerator));
+            generatorSelectorControl.Content = generatorSelector;
+
+            noiseForm = new Form(noise);
+            noiseFormControl.Content = noiseForm;
+
+            noiseSelector = new PluginSelector(typeof(INoise));
+            noiseSelectorControl.Content = noiseSelector;            
+        }
+
+        /// <summary>
+        /// Обработчик кнопки "Генерировать"
+        /// </summary>        
+        private void GenerateButton_Click(object sender, RoutedEventArgs e)
+        {
+            logger.Info("Start generating");
+
+            if (!validateInputs()) return;
+
+            GenerationManager gm = new GenerationManager();
+
+            IGenerator generator = generatorSelector.getSelectedPlugin() as IGenerator;
+            INoise noise = noiseSelector.getSelectedPlugin() as INoise;
+
+            IList<Object> param = generalForm.getValues();
+            double minX = (double)param[0]
+                , maxX = (double)param[1]
+                , step = (double)param[2];
+
+            param = noiseForm.getValues();
+            double k = (double)param[0];
+
+            try
+            {
+                generatedFunction = gm.generate(minX, maxX, step
+                                        , generator, generatorSelector.getPluginParametersValues()
+                                        , noise, noiseSelector.getPluginParametersValues()
+                                        , k
+                                        );
+                drawFunction(generatedFunction);
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Generation error: " + ex.ToString());
+                MessageBox.Show("Ошибка генерирования");
+            }
+        }        
+
+        #region Fields
+
+        Form generalForm = null;
+        Form noiseForm = null;
+        PluginSelector generatorSelector = null;
+        PluginSelector noiseSelector = null;
         static Logger logger = LogManager.GetCurrentClassLogger();
         PluginManager pluginManager = PluginManager.getPluginManager();
         Function _generatedFunction = null;
@@ -43,276 +129,33 @@ namespace Generator
             }
         }
 
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        public MainWindow()
-        {
-            InitializeComponent();       
-
-            generatorsComboBox.Items.Clear();            
-            noisesComboBox.Items.Clear();
-            generatorParameters.Children.Clear();
-            noiseParameters.Children.Clear();
-
-            generatorsComboBox.SelectionChanged += generatorsComboBox_SelectionChanged;
-            noisesComboBox.SelectionChanged += noisesComboBox_SelectionChanged;            
-
-            minXTextBox.Tag = Parameter.Double("Левая граница", 0);
-            maxXTextBox.Tag = Parameter.Double("Правая граница", 10);
-            stepTextBox.Tag = Parameter.Double("Шаг", 0.1);
-            kTextBox.Tag = Parameter.Double("Коэффицент", 1);
-
-            minXTextBox.Text = (minXTextBox.Tag as Parameter).defaultValue.ToString();
-            maxXTextBox.Text = (maxXTextBox.Tag as Parameter).defaultValue.ToString();
-            stepTextBox.Text = (stepTextBox.Tag as Parameter).defaultValue.ToString();
-            kTextBox.Text = (kTextBox.Tag as Parameter).defaultValue.ToString();
-
-            refreshControlPanel();
-
-            chart.LegendVisible = false;
-        }        
-
-        /// <summary>
-        /// Обработчик кнопки "Генерировать"
-        /// </summary>        
-        private void GenerateButton_Click(object sender, RoutedEventArgs e)
-        {
-            logger.Info("Start generating");
-
-            if (!validateInputs()) return;
-
-            
-            GenerationManager gm = new GenerationManager();
-
-            IGenerator generator = pluginManager.getBeans(typeof(IGenerator)
-                , (generatorsComboBox.SelectedItem as ComboBoxItem).Tag as string)
-                [0] as IGenerator;
-
-            INoise noise = null;
-            if(noisesComboBox.SelectedItem != null)
-            {
-                noise = pluginManager.getBeans(typeof(INoise)
-                , (noisesComboBox.SelectedItem as ComboBoxItem).Tag as string)
-                [0] as INoise;
-            }
-
-            double minX = double.Parse(minXTextBox.Text)
-                , maxX = double.Parse(maxXTextBox.Text)
-                , step = double.Parse(stepTextBox.Text)
-                , k = double.Parse(kTextBox.Text);
-
-            try
-            {
-                generatedFunction = gm.generate(minX, maxX, step
-                                        , generator, getParameters(generatorParameters)
-                                        , noise, getParameters(noiseParameters)
-                                        , k
-                                        );
-                drawFunction(generatedFunction);
-            }
-            catch(Exception ex)
-            {
-                logger.Error("Generation error: "+ex.ToString());
-                MessageBox.Show("Ошибка генерирования");
-            }
-        }
-
-        /// <summary>
-        /// Заполняет ComboBox всеми доступными плагинами указанного типа
-        /// </summary>
-        /// <param name="comboBox">ComboBox для заполнения</param>
-        /// <param name="pluginType">Тип плагина</param>
-        private void  setupComboBox(ComboBox comboBox, Type pluginType)
-        {
-            IList<IPlugin> plugins = pluginManager.getBeans(pluginType);
-
-            comboBox.Items.Clear();
-            foreach(IPlugin plugin in plugins)
-            {
-                ComboBoxItem item = new ComboBoxItem();
-                item.Content = plugin.title;
-                item.Tag = plugin.name;
-                comboBox.Items.Add(item);
-            }
-
-            comboBox.SelectedIndex = 0;
-        }
-
-        /// <summary>
-        /// Формирует форму для заполнения параметров плагина
-        /// </summary>
-        /// <param name="stackPanel">StackPanel для заполнения</param>
-        /// <param name="plugin">Плагин, для которого нужно сгенерировать форму</param>       
-        private void setupParametersStackPanel(StackPanel stackPanel, IPlugin plugin)
-        {
-            stackPanel.Children.Clear();
-
-            foreach(Parameter parameter in plugin.getParametersList())
-            {
-                /*
-                 *<StackPanel Orientation="Horizontal">
-                 *<TextBlock Text="name" Width="90" Margin="5" VerticalAlignment="Center"/>
-                 *<TextBox Width="60" Margin="5"></TextBox>
-                 *</StackPanel> 
-                 */
-
-                StackPanel horizontalStackPanel = new StackPanel();
-                horizontalStackPanel.Orientation = Orientation.Horizontal;
-
-                TextBlock title = new TextBlock();
-                title.Text = parameter.title;
-                title.Width = 90;
-                title.Margin = new Thickness(5);
-                title.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-
-                TextBox edit = new TextBox();
-                edit.Text = parameter.defaultValue.ToString();
-                edit.Width = 60;
-                edit.Margin = new Thickness(5);
-                edit.Tag = parameter;
-
-                horizontalStackPanel.Children.Add(title);
-                horizontalStackPanel.Children.Add(edit);
-
-                stackPanel.Children.Add(horizontalStackPanel);
-            }
-        }
-
-        /// <summary>
-        /// Проверяет, что TextBox содержит допустимое значение
-        /// </summary>        
-        private bool validateTextBox(TextBox textBox)
-        {
-            if(textBox.Tag == null || !(textBox.Tag is Parameter))
-            {
-                logger.Error("There is no parameter assigned to textbox");
-                return false;
-            }
-
-            Parameter parameter = textBox.Tag as Parameter;
-
-            if (!parameter.validate(textBox.Text))
-            {
-                MessageBox.Show("Параметр \"" + parameter.title +"\" задан неверно");
-                return false;
-            }
-            else return true;
-        }
-
-        /// <summary>
-        /// Проверяет, что все TextBox-ы в StackPanel содержат допустимые значения
-        /// </summary>        
-        private bool validateTextBoxes(StackPanel stackPanel)
-        {
-            foreach (UIElement element in stackPanel.Children)
-            {
-                if (element is TextBox)
-                    if (!validateTextBox(element as TextBox))
-                        return false;
-                if (element is StackPanel)
-                    if (!validateTextBoxes(element as StackPanel))
-                        return false;
-            }
-
-            return true;
-        }
+        #endregion  
 
         /// <summary>
         /// Проверяет, что все поля содержат допустимые значения
         /// </summary>
         private bool validateInputs()
         {
-            if (!validateTextBox(minXTextBox))
-            {                
-                return false;
-            }
-            if (!validateTextBox(maxXTextBox))
-            {
-                return false;
-            }
-            if (!validateTextBox(stepTextBox))
-            {
-                return false;
-            }
-            if (!validateTextBox(kTextBox))
-            {
-                return false;
-            }
+            List<string> errors = new List<string>();
+            errors.AddRange(generalForm.getErrors());
+            errors.AddRange(noiseForm.getErrors());
+            errors.AddRange(generatorSelector.getErrors());
+            errors.AddRange(noiseSelector.getErrors());
 
-            if (!validateTextBoxes(generatorParameters)) return false;
-            if (!validateTextBoxes(noiseParameters)) return false;            
-
-            if (double.Parse(minXTextBox.Text) > double.Parse(maxXTextBox.Text))
+            if (errors.Count > 0)
             {
-                string tmp = minXTextBox.Text;
-                minXTextBox.Text = maxXTextBox.Text;
-                maxXTextBox.Text = tmp;                
-            }
-
-            double step = double.Parse(stepTextBox.Text);              
-            if (step < GlobalConstants.Precision)
-            {
-                MessageBox.Show("Шаг слишком мал");
-                return false;
-            }
-
-            if(generatorsComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Не выбран генератор");
-                return false;
-            }
-
-            IList<IPlugin> targetGenerator 
-                = pluginManager.getBeans(typeof(IGenerator)
-                    , (generatorsComboBox.SelectedItem as ComboBoxItem).Tag as string
-                  );
-
-            if(targetGenerator.Count != 1)
-            {
-                MessageBox.Show("Генератор не найден");
-                return false;
-            }
-
-            IGenerator generator = targetGenerator[0] as IGenerator;            
-            if(!generator.checkParametersList(getParameters(generatorParameters)))
-            {
-                MessageBox.Show("Неверные аргументы генератора");
-                return false;
-            }
-
-            if (noisesComboBox.SelectedItem != null)
-            {
-                IList<IPlugin> targetNoise
-                    = pluginManager.getBeans(typeof(INoise)
-                        , (noisesComboBox.SelectedItem as ComboBoxItem).Tag as string
-                      );
-
-                if (targetNoise.Count != 1)
+                string errorMessage = "";
+                foreach(string line in errors)
                 {
-                    MessageBox.Show("Генератор не найден");
-                    return false;
+                    if(errorMessage != "") errorMessage += Environment.NewLine;
+                    errorMessage += line;
                 }
-
-                INoise noise = targetNoise[0] as INoise;
-                if (!noise.checkParametersList(getParameters(noiseParameters)))
-                {
-                    MessageBox.Show("Неверные аргументы погрешности");
-                    return false;
-                }
+                MessageBox.Show(errorMessage);
+                return false;
             }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Перестраивает панель с формами
-        /// </summary>
-        private void refreshControlPanel()
-        {
-            setupComboBox(generatorsComboBox, typeof(IGenerator));            
-            setupComboBox(noisesComboBox, typeof(INoise));                    
-        }
+            else
+                return true;
+        }        
 
         /// <summary>
         /// Отображает функцию f на графике
@@ -338,83 +181,9 @@ namespace Generator
             functionGraph.DataSource = compositeDataSource;
 
             chart.FitToView();
-        }
+        }        
 
-        /// <summary>
-        /// Обработка изменения выбранного генератора
-        /// </summary>
-        private void generatorsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox comboBox = (sender as ComboBox);            
-            if (comboBox.SelectedItem != null)
-            {
-                string generatorName = (comboBox.SelectedItem as ComboBoxItem).Tag as string;
-                IList<IPlugin> target = pluginManager.getBeans(typeof(IGenerator), generatorName);
-                if (target.Count != 1)
-                {
-                    logger.Fatal("Can not find selected generator");
-                    throw new NullReferenceException("Can not find selected generator");
-                }
-
-                setupParametersStackPanel(generatorParameters, target[0]);
-            }
-        }
-
-        /// <summary>
-        /// Обработка изменения выбранной погрешности
-        /// </summary>
-        private void noisesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox comboBox = (sender as ComboBox);
-            if (comboBox.SelectedItem != null)
-            {
-                string generatorName = (comboBox.SelectedItem as ComboBoxItem).Tag as string;
-                IList<IPlugin> target = pluginManager.getBeans(typeof(INoise), generatorName);
-                if (target.Count != 1)
-                {
-                    logger.Fatal("Can not find selected noise");
-                    throw new NullReferenceException("Can not find selected noise");
-                }
-
-                setupParametersStackPanel(noiseParameters, target[0]);
-            }
-        }
-
-        /// <summary>
-        /// Получает список значений параметров из формы
-        /// </summary>
-        /// <param name="parameterStackPanel">Форма, которая будет обрабатываться</param>
-        /// <returns>Список значений параметров из формы</returns>
-        private IList<Object> getParameters(StackPanel parameterStackPanel)
-        {
-            IList<Object> result = new List<Object>();
-            foreach (UIElement element in parameterStackPanel.Children)
-            {
-                if (element is TextBox)
-                {
-                    Parameter parameter = (element as TextBox).Tag as Parameter;
-                    result.Add(parameter.parse((element as TextBox).Text));
-                }
-
-                if(element is StackPanel)
-                {
-                    foreach (Object p in getParameters(element as StackPanel))
-                        result.Add(p);
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Сохраняет функцию в файл
-        /// </summary>
-        /// <param name="f">Функция</param>
-        /// <param name="filename">Имя файла, куда следует сохранить функцию</param>
-        private void saveToFile(Function f, string filename)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        
         /// <summary>
         /// Обработчик нажатия на пункт меню "Выход"
         /// </summary>        
@@ -535,5 +304,276 @@ namespace Generator
             pluginManager.refresh();
             refreshControlPanel();
         }
-    }
+
+        #region Private types
+
+        /// <summary>
+        /// Форма для ввода набора параметров
+        /// </summary>
+        private class Form : StackPanel
+        {
+            #region Public methods
+
+            /// <summary>
+            /// Констуктор, который подучает набор параметров
+            /// </summary>
+            /// <param name="parameters">Набор параметров</param>
+            public Form(IList<Parameter> parameters)
+            {
+                foreach (Parameter parameter in parameters)
+                    lines.Add(new Line(parameter));
+
+                this.Children.Clear();
+                foreach(Line line in lines)
+                    this.Children.Add(line);
+            }
+
+            /// <summary>
+            /// Возвращает список значений, которые ввёл пользователь
+            /// </summary>
+            /// <returns>Список значений, которые ввёл пользователь</returns>
+            public IList<Object> getValues()
+            {
+                IList<Object> values = new List<object>();
+
+                foreach (Line line in lines)
+                    values.Add(line.getValue());
+
+                return values;
+            }
+
+            /// <summary>
+            /// Проверяет, есть ли ошибки ввода
+            /// </summary>
+            /// <returns>Список ошибок ввода</returns>
+            public List<string> getErrors()
+            {
+                List<string> errors = new List<string>();
+                foreach(Line line in lines)
+                {
+                    string error = line.getError();
+                    if (error != null)
+                        errors.Add(error);
+                }
+
+                return errors;
+            }
+
+            #endregion
+
+            #region Fields
+            List<Line> lines = new List<Line>();
+            #endregion
+
+            #region Private types
+
+            /// <summary>
+            /// Строка, состоящая из заголовка и поля для ввода
+            /// </summary>
+            private class Line: Grid
+            {
+                #region Public methods
+
+                /// <summary>
+                /// Конструктор, принимающий параметр, который будет вводиться
+                /// </summary>
+                /// <param name="parameter">Параметр, который будет вводиться</param>
+                public Line(Parameter parameter)
+                {
+                    this.ColumnDefinitions.Add(new ColumnDefinition());
+
+                    caption = new TextBlock();
+                    caption.Text = parameter.title;
+                    caption.Margin = new Thickness(5);
+                    caption.VerticalAlignment = VerticalAlignment.Center;
+                    caption.HorizontalAlignment = HorizontalAlignment.Left;
+
+                    edit = new TextBox();
+                    edit.Text = parameter.defaultValue.ToString();
+                    edit.Width = 60;
+                    edit.Margin = new Thickness(5);
+                    edit.VerticalAlignment = VerticalAlignment.Center;
+                    edit.HorizontalAlignment = HorizontalAlignment.Right;                    
+                    Grid.SetColumn(edit, 1);
+                    edit.TextChanged += edit_TextChanged;
+
+                    this.parameter = parameter;
+
+                    this.Children.Clear();
+                    this.Children.Add(caption);
+                    this.Children.Add(edit);
+                    
+                }                
+
+                /// <summary>
+                /// Проверяет, есть ли ошибки ввода
+                /// </summary>
+                /// <returns>string с описанием, если есть ошибка, null в противном случае</returns>
+                public string getError()
+                {
+                    if (parameter.validate(edit.Text)) return null;
+
+                    return "Параметр \"" + parameter.title + "\" задан неверно";
+                }
+
+                /// <summary>
+                /// Возвращает значение параметра, которое ввёл пользователь
+                /// </summary>
+                /// <returns>Значение параметра</returns>
+                public Object getValue()
+                {
+                    if(!parameter.validate(edit.Text))
+                    {
+                        logger.Error("Can't parse " + parameter.title + "parameter");
+                        throw new System.ArgumentException("Can't parse " + parameter.title + "parameter");
+                    }
+
+                    return parameter.parse(edit.Text);
+                }
+
+                #endregion
+
+                #region Fields
+
+                TextBlock caption;
+                TextBox edit;
+                Parameter parameter;
+
+                #endregion
+
+                #region Private Methods
+                void edit_TextChanged(object sender, TextChangedEventArgs e)
+                {   
+                    if (parameter.validate(edit.Text))
+                        edit.Background = new SolidColorBrush(Colors.White);
+                    else
+                        edit.Background = new SolidColorBrush(Colors.Pink);
+                }
+                #endregion
+            }
+
+            #endregion
+        }
+
+        private class PluginSelector : StackPanel
+        {
+            #region Public methods
+
+            /// <summary>
+            /// Конструктор
+            /// </summary>
+            /// <param name="pluginType">Тип плагинов, которые будут находиться в выпадающем списке</param>
+            public PluginSelector(Type pluginType)
+            {
+                this.pluginType = pluginType;
+
+                plugins = pluginManager.getBeans(pluginType);
+
+                comboBox = new ComboBox();
+                comboBox.Margin = new Thickness(5);
+                foreach(IPlugin plugin in plugins)
+                {
+                    ComboBoxItem item = new ComboBoxItem();
+                    item.Content = plugin.title;
+                    item.Tag = plugin;
+
+                    comboBox.Items.Add(item);
+                }
+
+                comboBox.SelectionChanged += comboBox_SelectionChanged;
+
+                if (comboBox.Items.Count > 0)
+                    comboBox.SelectedItem = comboBox.Items[0];
+
+                this.Children.Clear();
+                this.Children.Add(comboBox);
+                this.Children.Add(parametersForm);
+            }
+
+            /// <summary>
+            /// Проверяет, есть ли ошибки ввода в форме для ввода параметров
+            /// </summary>
+            /// <returns>Список ошибок ввода</returns>
+            public IList<string> getErrors()
+            {
+                if (form == null || comboBox.SelectedItem == null) return new List<string>();
+
+                List<string> errors = form.getErrors();
+
+                if (errors.Count > 0) return errors;
+
+                IPlugin plugin = (comboBox.SelectedItem as ComboBoxItem).Tag as IPlugin;
+                errors.AddRange(plugin.checkParametersList(form.getValues()));
+
+                return errors;
+
+            }
+
+            /// <summary>
+            /// Возвращает список значений параметров, которые ввёл пользователь
+            /// </summary>
+            /// <returns>Список значений, которые ввёл пользователь</returns>
+            public IList<Object> getValues()
+            {
+                if (form == null) return new List<Object>();
+
+                return form.getValues();
+            }
+
+            /// <summary>
+            /// Возвращает выбранный генератор
+            /// </summary>
+            /// <returns>Вебранный генератор</returns>
+            public IPlugin getSelectedPlugin()
+            {                
+                if(comboBox.SelectedItem == null) return null;
+                return (comboBox.SelectedItem as ComboBoxItem).Tag as IPlugin;
+            }
+
+            /// <summary>
+            /// Возвращает значения параметров плагина
+            /// </summary>
+            /// <returns>Значения параметров плагина</returns>
+            public IList<Object> getPluginParametersValues()
+            {
+                if (form == null) return new List<Object>();
+                return form.getValues();
+            }
+            
+            #endregion
+
+            #region Fields
+
+            Type pluginType;
+            IList<IPlugin> plugins;
+            ComboBox comboBox;
+            ContentControl parametersForm = new ContentControl();
+            Form form = null;
+            PluginManager pluginManager = PluginManager.getPluginManager();
+
+            #endregion
+
+            #region Private methods
+
+            /// <summary>
+            /// Обработчик изменения выбраного плагина
+            /// </summary>            
+            void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                if(comboBox.SelectedItem == null) return;
+
+                IPlugin selectedPlugin = (comboBox.SelectedItem as ComboBoxItem).Tag as IPlugin;
+
+                form = new Form(selectedPlugin.getParametersList());
+
+                parametersForm.Content = form;
+            }
+            #endregion
+        }
+
+        #endregion
+
+        
+
+    }    
 }

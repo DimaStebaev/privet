@@ -93,15 +93,28 @@ namespace Common
             }
             public override bool validate(string value)
             {
+                value = modifyDecimalSeparator(value);
                 double x;
                 return double.TryParse(value, out x);
             }
 
             public override object parse(string value)
             {
+                value = modifyDecimalSeparator(value);
                 if (!validate(value)) throw new ArgumentException("Argument value " + value + " can not be parsed");
 
                 return double.Parse(value);
+            }
+
+            private string modifyDecimalSeparator(string str)
+            {
+                StringBuilder sb = new StringBuilder(str);
+
+                char sep = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+                sb.Replace('.', sep);
+                sb.Replace(',', sep);
+
+                return sb.ToString();
             }
         }
     }    

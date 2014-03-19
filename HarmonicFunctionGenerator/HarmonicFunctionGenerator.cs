@@ -83,7 +83,7 @@ namespace HarmonicFunctionGenerator
         /// <param name="parameters">Список параметров</param>
 	    public virtual void setup(IList<Object> parameters)
 	    {
-            if (!checkParametersList(parameters))   // Валидация параметров
+            if (checkParametersList(parameters).Count>0)   // Валидация параметров
                 throw new ArgumentException("Not available argument");
 
             a = (double)parameters[0];
@@ -103,8 +103,12 @@ namespace HarmonicFunctionGenerator
         /// </summary>
         /// <param name="parameters">Список параметров</param>
         /// <returns>Успех / ошибка</returns>
-        public bool checkParametersList(IList<Object> parameters)
+        public IList<string> checkParametersList(IList<Object> parameters)
         {
+            //TODO: нужно возвращать список ошибок
+            throw new System.NotImplementedException();
+
+            /*
             // Если количество параметров 3 - верно
             if(parameters.Count==3)
             {
@@ -122,6 +126,7 @@ namespace HarmonicFunctionGenerator
                 }
             }
             return false;
+             */
         }
     }
 }

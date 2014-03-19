@@ -81,11 +81,16 @@ namespace UniformNoise
         /// </summary>
         /// <param name="parameters">Список параметров</param>
         /// <returns>Успех / ошибка</returns>
-        public bool checkParametersList(IList<Object> parameters)
+        public IList<string> checkParametersList(IList<Object> parameters)
         {
+            //TODO: нужно возвращать список описаний ошибок
+            throw new System.NotImplementedException();
+
+            /*
             if (parameters.Count != 0)
                 return false;
             return true;
+             */
         }
     }
 }

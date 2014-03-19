@@ -13,17 +13,39 @@ namespace Common
 {
     public interface IPlugin 
     {
+        /// <summary>
+        /// Описание плагина, которое выводится в UI
+        /// </summary>
 	    string title { get; }
 
+        /// <summary>
+        /// Уникальное внутреннее имя плагина
+        /// </summary>
         string name { get; }   
      
+        /// <summary>
+        /// Вызывается каждый раз при инстанцировании плагина
+        /// </summary>
 	    void initialize();
 
+        /// <summary>
+        /// Возвращает список параметров, необходимых для его настройки
+        /// </summary>
+        /// <returns>Список параметров</returns>
 	    IList<Parameter> getParametersList();
 
+        /// <summary>
+        /// Настраивает параметр соответствующими значениями параметров
+        /// </summary>
+        /// <param name="parameters">Параметры для настройки плагина</param>
 	    void setup(IList<Object> parameters);
 
-	    bool checkParametersList(IList<Object> parameters);
+        /// <summary>
+        /// Возвращает список ошибок
+        /// </summary>
+        /// <param name="parameters">Список параметров</param>
+        /// <returns>Список описаний ошибок</returns>
+	    IList<string> checkParametersList(IList<Object> parameters);
 
     }
 }

@@ -36,7 +36,7 @@ namespace Generator
                 throw new ArgumentNullException("generator is null");
             }
 
-            if(!generator.checkParametersList(generatorParameters))
+            if(generator.checkParametersList(generatorParameters).Count > 0)
             {
                 logger.Error("Wrong generator arguments");
                 throw new ArgumentException("Wrong generator arguments");
@@ -48,7 +48,7 @@ namespace Generator
 
             if(noise != null)
             {
-                if(!noise.checkParametersList(noiseParameters))
+                if(noise.checkParametersList(noiseParameters).Count > 0)
                 {
                     logger.Error("Wrong noise arguments");
                     throw new ArgumentException("Wrong noise arguments");

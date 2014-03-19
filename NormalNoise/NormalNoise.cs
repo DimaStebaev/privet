@@ -87,9 +87,9 @@ namespace NormalNoise
 		    
 	    }
 
-        public bool checkParametersList(IList<Object> parameters)
+        public IList<string> checkParametersList(IList<Object> parameters)
         {
-            return true;
+            return new List<string>();
         }
         #endregion
 

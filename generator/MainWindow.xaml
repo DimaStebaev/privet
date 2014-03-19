@@ -29,42 +29,56 @@
               
         <StackPanel Grid.Row="1">            
             <TextBlock Text="Параметры генерирования" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Левая граница" Width="90" Margin="5" VerticalAlignment="Center"/>
-                <TextBox x:Name="minXTextBox" Width="60" Margin="5" HorizontalAlignment="Right"></TextBox>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Правая граница" Width="90" Margin="5" VerticalAlignment="Center"/>
-                <TextBox x:Name="maxXTextBox" Width="60" Margin="5"></TextBox>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Шаг" Width="90" Margin="5" VerticalAlignment="Center"/>
-                <TextBox x:Name="stepTextBox" Width="60" Margin="5"></TextBox>
-            </StackPanel>
-            <TextBlock Text="Генератор" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
-            <ComboBox x:Name="generatorsComboBox" Margin="5" >
-                <ComboBoxItem Content="first" IsSelected="True"/>
-                <ComboBoxItem Content="second"/>
-                <ComboBoxItem Content="third"/>
-            </ComboBox>
-            <StackPanel x:Name="generatorParameters">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Параметр 1" Width="90" Margin="5" VerticalAlignment="Center"/>
-                    <TextBox Width="60" Margin="5"></TextBox>
+            <ContentControl x:Name="generalFormControl">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Левая граница" Width="90" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox  Width="60" Margin="5" HorizontalAlignment="Right"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Правая граница" Width="90" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox  Width="60" Margin="5"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Шаг" Width="90" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox Width="60" Margin="5"></TextBox>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </ContentControl>
+            <TextBlock Text="Генератор" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <ContentControl x:Name="generatorSelectorControl">
+                <StackPanel>
+                    <ComboBox Margin="5" >
+                        <ComboBoxItem Content="first" IsSelected="True"/>
+                        <ComboBoxItem Content="second"/>
+                        <ComboBoxItem Content="third"/>
+                    </ComboBox>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Параметр 1" Width="90" Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Width="60" Margin="5"></TextBox>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ContentControl>
             <TextBlock Text="Погрешность" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Коэффицент" Width="90" Margin="5" VerticalAlignment="Center"/>
-                <TextBox x:Name="kTextBox" Width="60" Margin="5"></TextBox>
-            </StackPanel>
-            <ComboBox x:Name="noisesComboBox" Margin="5">
-                <ComboBoxItem Content="first" IsSelected="True"/>
-                <ComboBoxItem Content="second"/>
-                <ComboBoxItem Content="third"/>
-            </ComboBox>
-            <StackPanel x:Name="noiseParameters">
-            </StackPanel>
+            <ContentControl x:Name="noiseFormControl">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Коэффицент" Width="90" Margin="5" VerticalAlignment="Center"/>
+                    <TextBox x:Name="kTextBox" Width="60" Margin="5"></TextBox>
+                </StackPanel>
+            </ContentControl>
+            <ContentControl x:Name="noiseSelectorControl">
+                <StackPanel>                    
+                    <ComboBox Margin="5">
+                        <ComboBoxItem Content="first" IsSelected="True"/>
+                        <ComboBoxItem Content="second"/>
+                        <ComboBoxItem Content="third"/>
+                    </ComboBox>
+                    <StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ContentControl>
             <Button Content="Сгенерировать" Margin="5" Click="GenerateButton_Click"/>
         </StackPanel>
         
