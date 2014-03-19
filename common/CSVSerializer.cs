@@ -16,6 +16,8 @@ namespace Common
     {
         #region Private Members
         private string mDelimeter = ",";
+        private List<double> mXList;
+        private List<double> mYList;
         #endregion
 
         #region properties
@@ -62,9 +64,11 @@ namespace Common
 
             string lineToWrite = String.Empty;
 
-            for (int i = 0; i < f.Length; i++)
+            for (double x = f.minX; x <= f.maxX; x += f.step)
             {
-                lineToWrite = f[i].ToString() + "," + f.getValue(f[i]);
+                double y = f.getValue(x);
+
+                lineToWrite = x.ToString() + "," + y.ToString();
                 fileStream.WriteLine(lineToWrite);
             }
 
@@ -89,19 +93,19 @@ namespace Common
                 double currentX = 0.0;
                 double currentY = 0.0;
 
-                var xList = new List<double>();
-                var yList = new List<double>();
+                mXList = new List<double>();
+                mYList = new List<double>();
 
 
                 while (!fileStream.EndOfStream)
                 {
                     lineToRead = fileStream.ReadLine();
                     values = lineToRead.Split(separators);
-                    //Check only strings with two double values
-                    if ((values.Length == 2) && Double.TryParse(values[0], out currentX) && Double.TryParse(values[1], out currentY))
+                    //Check only strings with two double values or with double values and the "" at the end
+                    if (((values.Length == 2) || (values.Length > 2 && values[2] == "")) && Double.TryParse(values[0], out currentX) && Double.TryParse(values[1], out currentY))
                     {
-                        xList.Add(currentX);
-                        yList.Add(currentY);
+                        mXList.Add(currentX);
+                        mYList.Add(currentY);
                     }
                     else
                     {
@@ -113,24 +117,52 @@ namespace Common
                 fileStream.Close();
 
                 //Find maximum and minimum x values
-                var minX = xList.Min();
-                var maxX = xList.Max();
+                var minX = mXList.Min();
+                var maxX = mXList.Max();
                 //Calculate step
-                var step = (maxX - minX) / (xList.Count - 1);
-                //And setup output function
-                functionToReadIn.setup(minX, maxX, step);
-                //Populate all values
-                for (int i = 0; i < xList.Count; i++)
-                {
-                    functionToReadIn.setValue(xList[i], yList[i]);
-                }
-                return functionToReadIn;
+                var step = (maxX - minX) / (mXList.Count - 1);
 
+                if (checkParsedData(minX, maxX, step))
+                {
+                    //And setup output function
+                    functionToReadIn.setup(minX, maxX, step);
+                    //Populate all values
+                    for (int i = 0; i < mXList.Count; i++)
+                    {
+                        functionToReadIn.setValue(mXList[i], mXList[i]);
+                    }
+                    return functionToReadIn;
+                }
+                else
+                {
+                    throw new InvalidDataException("File corrupted.");
+                }
             }
             else
             {
                 throw new FileNotFoundException("Filename is incorrect.");
             }
+        }
+
+        /// <summary>
+        /// Checks the data that was parsed through deserialize method
+        /// </summary>
+        /// <returns>True, if data is ok</returns>
+        private bool checkParsedData(double minX, double maxX, double step)
+        {
+            int i = 0;
+
+            for (double x = minX; x <= maxX; x += step)
+            {
+                //Validate X, check step should be the same
+                if (x != mXList[i])
+                {
+                    return false;
+                }
+                i++;
+            }
+
+            return true;
         }
 
         public virtual void initialize()
