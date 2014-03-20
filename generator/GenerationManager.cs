@@ -28,7 +28,7 @@ namespace Generator
         /// <returns>Функцию заданного вида с заданной погрешностью</returns>
         public virtual Function generate(double minX, double maxX, double step
             , IGenerator generator, IList<Object> generatorParameters
-            , INoise noise, IList<Object> noiseParameters, double k)
+            , INoise noise, IList<Object> noiseParameters, double k, bool isRelative)
         {
             if(generator == null)
             {
@@ -57,7 +57,7 @@ namespace Generator
                 noise.setup(noiseParameters);                
                 
                 Noiser noiser = new Noiser();
-                f = noiser.addNoise(f, noise, k);                 
+                f = noiser.addNoise(f, noise, k, isRelative);                 
             }
 
             return f;

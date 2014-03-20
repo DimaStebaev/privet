@@ -63,9 +63,17 @@
             </ContentControl>
             <TextBlock Text="Погрешность" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
             <ContentControl x:Name="noiseFormControl">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Коэффицент" Width="90" Margin="5" VerticalAlignment="Center"/>
-                    <TextBox x:Name="kTextBox" Width="60" Margin="5"></TextBox>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Коэффицент" Width="90" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox x:Name="kTextBox" Width="60" Margin="5"></TextBox>
+                    </StackPanel>
+                    <GroupBox Header="Тип погрешности">
+                        <StackPanel>                        
+                            <RadioButton Content="Относиьтельная" IsChecked="True"/>
+                            <RadioButton Content="Абсолютная"/>
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </ContentControl>
             <ContentControl x:Name="noiseSelectorControl">

@@ -54,6 +54,7 @@ namespace Generator
 
             List<Parameter> noise = new List<Parameter>();
             noise.Add(Parameter.Double("Коэффицент", 0.3));
+            noise.Add(new Parameter.BooleanParameter("Тип погрешности", "Относительная", "Абсолютная", true));
 
             generalForm = new Form(general);
             generalFormControl.Content = generalForm;
@@ -89,6 +90,7 @@ namespace Generator
 
             param = noiseForm.getValues();
             double k = (double)param[0];
+            bool isRelative = (bool)param[1];
 
             try
             {
@@ -96,11 +98,13 @@ namespace Generator
                                         , generator, generatorSelector.getPluginParametersValues()
                                         , null, null
                                         , k
+                                        , false
                                         );
                 generatedFunction = gm.generate(minX, maxX, step
                                         , generator, generatorSelector.getPluginParametersValues()
                                         , noise, noiseSelector.getPluginParametersValues()
                                         , k
+                                        , isRelative
                                         );
 
                 drawFunction(EtalonFunction, generatedFunction);
@@ -389,7 +393,7 @@ namespace Generator
             public Form(IList<Parameter> parameters)
             {
                 foreach (Parameter parameter in parameters)
-                    lines.Add(new Line(parameter));
+                    lines.Add(Line.makeLine(parameter));                    
 
                 this.Children.Clear();
                 foreach(Line line in lines)
@@ -436,9 +440,9 @@ namespace Generator
             #region Private types
 
             /// <summary>
-            /// Строка, состоящая из заголовка и поля для ввода
+            /// Строка в форме
             /// </summary>
-            private class Line: Grid
+            private abstract class Line : Grid
             {
                 #region Public methods
 
@@ -447,6 +451,63 @@ namespace Generator
                 /// </summary>
                 /// <param name="parameter">Параметр, который будет вводиться</param>
                 public Line(Parameter parameter)
+                {
+                    this.parameter = parameter;
+                }
+
+                /// <summary>
+                /// Проверяет, есть ли ошибки ввода
+                /// </summary>
+                /// <returns>string с описанием, если есть ошибка, null в противном случае</returns>
+                public abstract string getError();
+
+                /// <summary>
+                /// Возвращает значение параметра, которое ввёл пользователь
+                /// </summary>
+                /// <returns>Значение параметра</returns>
+                public abstract Object getValue();         
+       
+                public static Line makeLine(Parameter parameter)
+                {
+                    if (parameter is Parameter.DoubleParameter)
+                        return new DoubleInputLine(parameter as Parameter.DoubleParameter);
+                    else if (parameter is Parameter.BooleanParameter)
+                    {
+                        Parameter.BooleanParameter booleanParameter = parameter as Parameter.BooleanParameter;
+                        return new BooleanInputLine(booleanParameter
+                            , parameter.title
+                            , booleanParameter.trueTitle
+                            , booleanParameter.falseTitle
+                            );
+                    }
+                    else
+                    {
+                        logger.Error("Unknown parameter type");
+                        throw new ArgumentException("Unknown parameter type");
+                    }
+                }
+
+                #endregion
+
+                #region Fields               
+                
+                protected Parameter parameter;
+
+                #endregion                
+            }
+
+            /// <summary>
+            /// Строка, состоящая из заголовка и поля для ввода
+            /// </summary>
+            private class DoubleInputLine: Line
+            {
+                #region Public methods
+
+                /// <summary>
+                /// Конструктор, принимающий параметр, который будет вводиться
+                /// </summary>
+                /// <param name="parameter">Параметр, который будет вводиться</param>
+                public DoubleInputLine(Parameter.DoubleParameter parameter):base(parameter)
                 {
                     this.ColumnDefinitions.Add(new ColumnDefinition());
 
@@ -463,9 +524,7 @@ namespace Generator
                     edit.VerticalAlignment = VerticalAlignment.Center;
                     edit.HorizontalAlignment = HorizontalAlignment.Right;                    
                     Grid.SetColumn(edit, 1);
-                    edit.TextChanged += edit_TextChanged;
-
-                    this.parameter = parameter;
+                    edit.TextChanged += edit_TextChanged;                  
 
                     this.Children.Clear();
                     this.Children.Add(caption);
@@ -477,7 +536,7 @@ namespace Generator
                 /// Проверяет, есть ли ошибки ввода
                 /// </summary>
                 /// <returns>string с описанием, если есть ошибка, null в противном случае</returns>
-                public string getError()
+                override public string getError()
                 {
                     if (parameter.validate(edit.Text)) return null;
 
@@ -488,7 +547,7 @@ namespace Generator
                 /// Возвращает значение параметра, которое ввёл пользователь
                 /// </summary>
                 /// <returns>Значение параметра</returns>
-                public Object getValue()
+                override public Object getValue()
                 {
                     if(!parameter.validate(edit.Text))
                     {
@@ -504,8 +563,7 @@ namespace Generator
                 #region Fields
 
                 TextBlock caption;
-                TextBox edit;
-                Parameter parameter;
+                TextBox edit;                
 
                 #endregion
 
@@ -517,6 +575,65 @@ namespace Generator
                     else
                         edit.Background = new SolidColorBrush(Colors.Pink);
                 }
+                #endregion
+            }
+
+            private class BooleanInputLine: Line
+            {
+                #region Public fields
+                public BooleanInputLine(Parameter.BooleanParameter parameter
+                    , string caption
+                    , string trueTitle
+                    , string falseTitle
+                    ):base(parameter)
+                {
+                    
+                    trueRadioButton = new RadioButton();
+                    trueRadioButton.Content = trueTitle;
+                    trueRadioButton.Margin = new Thickness(5, 5, 5, 0);
+                    RadioButton falseRadioButton = new RadioButton();
+                    falseRadioButton.Content = falseTitle;
+                    falseRadioButton.Margin = new Thickness(5);                    
+                    
+                    if ((bool)parameter.defaultValue)
+                        trueRadioButton.IsChecked = true;
+                    else
+                        falseRadioButton.IsChecked = true;
+
+                    GroupBox groupBox = new GroupBox();
+                    groupBox.Header = caption;
+                    groupBox.Margin = new Thickness(5);
+
+                    StackPanel sp = new StackPanel();
+
+                    sp.Children.Add(trueRadioButton);
+                    sp.Children.Add(falseRadioButton);
+                    groupBox.Content = sp;
+
+                    this.Children.Add(groupBox);
+                }
+                /// <summary>
+                /// Проверяет, есть ли ошибки ввода
+                /// </summary>
+                /// <returns>string с описанием, если есть ошибка, null в противном случае</returns>
+                override public string getError()
+                {
+                    return null;
+                }
+
+                /// <summary>
+                /// Возвращает значение параметра, которое ввёл пользователь
+                /// </summary>
+                /// <returns>Значение параметра</returns>
+                override public Object getValue()
+                {
+                    return trueRadioButton.IsChecked;
+                }  
+
+                #endregion
+
+                #region Fields                
+                RadioButton trueRadioButton;
                 #endregion
             }
 

@@ -65,7 +65,7 @@ namespace Common
         public static Parameter Double(string title, double defaultValue)
         {
             return new DoubleParameter(title, defaultValue);
-        }        
+        }       
 
         /// <summary>
         /// Проверяет, возмодно ли преобразовать строку в значение параметра
@@ -84,7 +84,7 @@ namespace Common
         /// <summary>
         /// Вещественный параметр
         /// </summary>
-        private class DoubleParameter : Parameter
+        public class DoubleParameter : Parameter
         {
             public DoubleParameter(string title, double defaultValue)
                 :base(typeof(double), title, defaultValue)
@@ -115,6 +115,42 @@ namespace Common
                 sb.Replace(',', sep);
 
                 return sb.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Булевый параметр
+        /// </summary>
+        public class BooleanParameter : Parameter
+        {
+            public BooleanParameter(string title, string trueTitle, string falseTitle, bool defaultValue)
+                : base(typeof(bool), title, defaultValue)
+            {
+                this.trueTitle = trueTitle;
+                this.falseTitle = falseTitle;
+            }
+            public override bool validate(string value)
+            {
+                return value.Equals("true") || value.Equals("false");                
+            }
+
+            public override object parse(string value)
+            {                
+                if (!validate(value)) throw new ArgumentException("Argument value " + value + " can not be parsed");
+
+                return value.Equals("true");
+            }
+
+            public string trueTitle
+            {
+                get;
+                private set;
+            }
+
+            public string falseTitle
+            {
+                get;
+                private set;
             }
         }
     }    

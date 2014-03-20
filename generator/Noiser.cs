@@ -18,12 +18,17 @@ namespace Generator
         /// <param name="noise">Тип погрешности</param>
         /// <param name="k">Чем больше K, тем больше погрешность</param>
         /// <returns>Функцию с добавленной погрешностью</returns>
-        public virtual Function addNoise(Function f, INoise noise, double k)
+        public virtual Function addNoise(Function f, INoise noise, double k, bool relative)
         {
             Function result = new Function();
             result.setup(f.minX, f.maxX, f.step);
             for (int i = 0; i < f.Length; i++)
-                result[i] = f[i] + k * f[i] * noise.getDeviation();
+            {
+                double noiseValue = k * noise.getDeviation();
+                if (relative)
+                    noiseValue *= f[i];
+                result[i] = f[i] + noiseValue;
+            }
             return result;
         }
 
