@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
+
 using Common;
 
 namespace Processor
@@ -19,7 +21,7 @@ namespace Processor
             throw new System.NotImplementedException();
         }
 
-        public virtual void process(Function f)
+        public virtual UIElement process(Function f)
         {
             throw new System.NotImplementedException();
         }

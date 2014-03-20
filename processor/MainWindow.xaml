@@ -39,7 +39,12 @@
                     </StackPanel>
                 </StackPanel>
             </ContentControl>
-        </StackPanel>                        
+            <Button x:Name="generateButton" Content="Обработать" Margin="5" Click="processButton_Click"/>
+        </StackPanel>   
         
+        <ContentControl x:Name="resultControl" Grid.Column="1" Grid.Row="1" />
+
+
+
     </Grid>
 </Window>
