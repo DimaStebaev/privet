@@ -83,14 +83,12 @@ namespace UniformNoise
         /// <returns>Успех / ошибка</returns>
         public IList<string> checkParametersList(IList<Object> parameters)
         {
-            //TODO: нужно возвращать список описаний ошибок
-            throw new System.NotImplementedException();
+            List<string> errorsList = new List<string>();
 
-            /*
             if (parameters.Count != 0)
-                return false;
-            return true;
-             */
+                errorsList.Add("Генератор равномерной случайной велечины не принимает параметры");
+            
+            return errorsList;
         }
     }
 }
