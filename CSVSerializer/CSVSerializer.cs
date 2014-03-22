@@ -22,7 +22,7 @@ namespace CSVSerializer
         {
             get
             {
-                throw new System.NotImplementedException();
+                return "Модуль для работы с файлами формата *.CSV";
             }
         }
 
@@ -30,7 +30,7 @@ namespace CSVSerializer
         {
             get
             {
-                throw new System.NotImplementedException();
+                return "csvSerializer";
             }
         }
 
@@ -50,22 +50,20 @@ namespace CSVSerializer
         /// <param name="f">Function to write</param>
         /// <param name="filename">Output file path</param>
         public virtual void serialize(Function f, string filename)
-        {
-            //Check existence 
-            if (!File.Exists(filename))
-            {
-                File.Create(filename);
-            }
+        {            
 
             StreamWriter fileStream = new StreamWriter(filename);
 
             string lineToWrite = String.Empty;
 
-            for (double x = f.minX; x <= f.maxX; x += f.step)
+            for (double x = f.minX; x <= f.maxX + f.step/2; x += f.step)
             {
                 double y = f.getValue(x);
 
-                lineToWrite = x.ToString() + "," + y.ToString();
+                lineToWrite = replaceCommasByPoints(x.ToString()) 
+                    + ","
+                    + replaceCommasByPoints(y.ToString());
+
                 fileStream.WriteLine(lineToWrite);
             }
 
@@ -98,8 +96,22 @@ namespace CSVSerializer
                 {
                     lineToRead = fileStream.ReadLine();
                     values = lineToRead.Split(separators);
+
+                    for (int i = 0; i < values.Length; i++)
+                        values[i] = modifyDecimalSeparator(values[i]);
+
                     //Check only strings with two double values or with double values and the "" at the end
-                    if (((values.Length == 2) || (values.Length > 2 && values[2] == "")) && Double.TryParse(values[0], out currentX) && Double.TryParse(values[1], out currentY))
+                    if (
+                        (
+                            (values.Length == 2)
+                            ||
+                            (values.Length > 2 && values[2] == "")
+                        )
+                        &&
+                        Double.TryParse(values[0], out currentX)
+                        &&
+                        Double.TryParse(values[1], out currentY)
+                    )
                     {
                         mXList.Add(currentX);
                         mYList.Add(currentY);
@@ -113,53 +125,51 @@ namespace CSVSerializer
                 }
                 fileStream.Close();
 
+                if (mXList.Count < 2) throw new InvalidDataException("File corrupted.");
+
                 //Find maximum and minimum x values
                 var minX = mXList.Min();
                 var maxX = mXList.Max();
                 //Calculate step
                 var step = (maxX - minX) / (mXList.Count - 1);
 
-                if (checkParsedData(minX, maxX, step))
-                {
-                    //And setup output function
-                    functionToReadIn.setup(minX, maxX, step);
-                    //Populate all values
-                    for (int i = 0; i < mXList.Count; i++)
-                    {
-                        functionToReadIn.setValue(mXList[i], mXList[i]);
-                    }
-                    return functionToReadIn;
-                }
-                else
-                {
-                    throw new InvalidDataException("File corrupted.");
-                }
+                functionToReadIn.setup(minX, maxX, step);
+
+                for (int i = 0; i < mXList.Count; i++)
+                    functionToReadIn.setValue(mXList[i], mYList[i]);
+                
+                return functionToReadIn;                
             }
             else
             {
                 throw new FileNotFoundException("Filename is incorrect.");
             }
+        }       
+
+        /// <summary>
+        /// Replace commas by points
+        /// </summary>
+        private string replaceCommasByPoints(string str)
+        {
+            StringBuilder sb = new StringBuilder(str);
+
+            sb.Replace(',', '.');
+
+            return sb.ToString();
         }
 
         /// <summary>
-        /// Checks the data that was parsed through deserialize method
-        /// </summary>
-        /// <returns>True, if data is ok</returns>
-        private bool checkParsedData(double minX, double maxX, double step)
+        /// Replace commas and points by system locale decimal separator
+        /// </summary>       
+        private string modifyDecimalSeparator(string str)
         {
-            int i = 0;
+            StringBuilder sb = new StringBuilder(str);
 
-            for (double x = minX; x <= maxX; x += step)
-            {
-                //Validate X, check step should be the same
-                if (x != mXList[i])
-                {
-                    return false;
-                }
-                i++;
-            }
+            char sep = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+            sb.Replace('.', sep);
+            sb.Replace(',', sep);
 
-            return true;
+            return sb.ToString();
         }
 
         public virtual void initialize()
@@ -169,17 +179,17 @@ namespace CSVSerializer
 
         public IList<string> checkParametersList(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+            return new List<string>();
         }
 
         public void setup(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public IList<Parameter> getParametersList()
         {
-            throw new System.NotImplementedException();
+            return new List<Parameter>();
         }
     }
 }
