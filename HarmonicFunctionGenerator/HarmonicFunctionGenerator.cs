@@ -105,28 +105,34 @@ namespace HarmonicFunctionGenerator
         /// <returns>Успех / ошибка</returns>
         public IList<string> checkParametersList(IList<Object> parameters)
         {
-            //TODO: нужно возвращать список ошибок
-            throw new System.NotImplementedException();
-
-            /*
+            List<string> errorsList = new List<string>();
+            
             // Если количество параметров 3 - верно
-            if(parameters.Count==3)
+            if(parameters.Count!=3)
+            {
+                errorsList.Add("Количество параметров должно быть 3");
+            }
+
+            for (int i = 0; i < parameters.Count && i < 3; i++)
             {
                 // Если все из параметров double - верно
-                if (parameters[0] is double &&
-                    parameters[1] is double &&
-                    parameters[2] is double)
+                if (!(parameters[i] is double))
+                    errorsList.Add("Параметр №" + (i+1).ToString() + ", должен быть типа double");
+               
+                if (i == 2)
                 {
                     double _a = (double)parameters[0];
                     double _b = (double)parameters[1];
                     double _c = (double)parameters[2];
                     // Если выполняется условие a>b>c - верно
-                    if (_a > _b && _b > _c)
-                        return true;
+                    if (_a < _b)
+                        errorsList.Add("Параметр \"а\" должен быть > \"b\"");
+                    if (_b < _c)
+                        errorsList.Add("Параметр \"b\" должен быть > \"c\"");
                 }
             }
-            return false;
-             */
+           
+            return errorsList;
         }
     }
 }
