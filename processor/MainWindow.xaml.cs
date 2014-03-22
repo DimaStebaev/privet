@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using NLog;
 
 using Common;
@@ -34,6 +35,7 @@ namespace Processor
         PluginSelector processorSelector = null;
         static Logger logger = LogManager.GetCurrentClassLogger();
         Function _processedFunction = null;
+        PluginManager pluginManager = PluginManager.getPluginManager();
 
         Function processedFunction
         {
@@ -105,7 +107,7 @@ namespace Processor
                 processor.setup(processorSelector.getPluginParametersValues());
 
                 ProcessingManager pm = new ProcessingManager();
-                UIElement result = pm.process(processedFunction);
+                UIElement result = pm.process(processor, processedFunction);
 
                 resultControl.Content = result;
             }
@@ -114,6 +116,75 @@ namespace Processor
                 logger.Error("Procession error: " + ex.ToString());
                 MessageBox.Show("Ошибка обработки");
             }
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Выход"
+        /// </summary>        
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Загрузить данные..."
+        /// </summary>  
+        private void MenuItemLoad_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            IList<IPlugin> plugins = pluginManager.getBeans(typeof(ISerializer));
+
+            if (plugins.Count < 1)
+            {
+                MessageBox.Show("Невозвожно загрузить функцию, так как отсутствуют соответствующие плагины");
+                logger.Error("Serializers are missing");
+                return;
+            }
+
+            dialog.Filter = "Файл с функцией|";
+            bool first = true;
+            foreach (IPlugin plugin in plugins)
+            {
+                ISerializer s = plugin as ISerializer;
+
+                if (first)
+                    first = false;
+                else
+                    dialog.Filter += ";";
+
+                dialog.Filter += "*." + s.extension;
+            }
+
+            Nullable<bool> result = dialog.ShowDialog();
+            if (result == true)
+            {
+                String filename = dialog.FileName;
+                string[] splitted = filename.Split('.');
+                string ext = splitted[splitted.Length - 1];
+
+                foreach (IPlugin plugin in plugins)
+                {
+                    ISerializer s = plugin as ISerializer;
+                    if (s.extension.Equals(ext))
+                    {
+                        processedFunction = s.deserialize(filename);                        
+                        return;
+                    }
+                }
+
+                logger.Error("Loading function error");
+                MessageBox.Show("Ошибка во время загрузки данных");
+            }
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на пункт меню "Обновить плагины"
+        /// </summary>  
+        private void MenuItemRefreshPlugins_Click(object sender, RoutedEventArgs e)
+        {
+            pluginManager.refresh();
+            refreshControlPanel();
         }
 
 #endregion

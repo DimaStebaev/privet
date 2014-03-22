@@ -15,15 +15,11 @@ using Common;
 namespace Processor
 {
     public class ProcessingManager
-    {
-        public virtual Function loadFromFile(string filename)
-        {
-            throw new System.NotImplementedException();
-        }
+    {       
 
-        public virtual UIElement process(Function f)
+        public virtual UIElement process(IProcessor processor, Function f)
         {
-            throw new System.NotImplementedException();
+            return processor.process(f);
         }
 
     }

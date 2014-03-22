@@ -14,11 +14,12 @@
         
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="Файл">
-                <MenuItem Header="Загрузить..."/>
-                <MenuItem Header="Выход"/>
+                <MenuItem Header="Загрузить данные..." Click="MenuItemLoad_Click"/>
+                <Separator/>
+                <MenuItem Header="Выход" Click="MenuItemExit_Click"/>
             </MenuItem>
             <MenuItem Header="Интсрументы">
-                <MenuItem Header="Обновить плагины"/>
+                <MenuItem Header="Обновить плагины" Click="MenuItemRefreshPlugins_Click"/>
             </MenuItem>
         </Menu>
 
