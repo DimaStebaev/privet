@@ -125,9 +125,9 @@ namespace HarmonicFunctionGenerator
                     double _b = (double)parameters[1];
                     double _c = (double)parameters[2];
                     // Если выполняется условие a>b>c - верно
-                    if (_a < _b)
+                    if (_a <= _b)
                         errorsList.Add("Параметр \"а\" должен быть > \"b\"");
-                    if (_b < _c)
+                    if (_b <= _c)
                         errorsList.Add("Параметр \"b\" должен быть > \"c\"");
                 }
             }
