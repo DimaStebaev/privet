@@ -23,45 +23,49 @@ namespace Processor
         {
             if (f == null) return null;
 
-            LineGraph functionGraph = new LineGraph();
+            ChartPlotter plotter = new ChartPlotter();
 
             LinkedList<double> x = new LinkedList<double>(), y = new LinkedList<double>();
 
-            for (double _x = f.minX; _x < f.maxX + f.step / 2; _x += f.step)
+            Function processedFunction = processFunction(f);
+
+            for (double _x = processedFunction.minX; _x < processedFunction.maxX + processedFunction.step / 2; _x += processedFunction.step)
             {
                 x.AddLast(_x);
-                y.AddLast(f.getValue(_x));
+                y.AddLast(processedFunction.getValue(_x));
             }
 
             var xDataSource = x.AsXDataSource();
             var yDataSource = y.AsYDataSource();
 
             CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
-            functionGraph.DataSource = compositeDataSource;
+            
+            plotter.AddLineGraph(compositeDataSource);
+            plotter.LegendVisible = false;
 
-            return (UIElement)functionGraph;
+            return (UIElement)plotter;
         }
 
         public void initialize()
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         protected abstract Function processFunction(Function f);
 
         public IList<Parameter> getParametersList()
         {
-            throw new System.NotImplementedException();
+            return new List<Parameter>();
         }
 
         public IList<string> checkParametersList(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+            return new List<string>();
         }
 
         public void setup(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+            return;
         }
     }
 }
