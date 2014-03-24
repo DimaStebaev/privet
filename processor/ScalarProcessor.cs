@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using Common;
 
 namespace Processor
@@ -22,29 +23,34 @@ namespace Processor
         public abstract string name { get; }
         public virtual UIElement process(Function f)
         {
-            throw new System.NotImplementedException();
+            if (f == null) return null;
+
+            Label result = new Label();
+            result.Content = title + " = " + processFunction(f).ToString();
+
+            return (UIElement)result;
         }
 
         public virtual void initialize()
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         protected abstract double processFunction(Function f);
 
         public IList<Parameter> getParametersList()
         {
-            throw new System.NotImplementedException();
+            return new List<Parameter>();
         }
 
         public void setup(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         public IList<string> checkParametersList(IList<Object> parameters)
         {
-            throw new System.NotImplementedException();
+           return new List<string>();
         }
 
     }
