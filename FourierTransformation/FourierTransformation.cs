@@ -43,11 +43,11 @@ namespace FourierTransformation
             output = DFT(input, Direction.Forward);
 
             Common.Function resultFunction = new Common.Function();
-            resultFunction.setup(f.minX, f.maxX, f.step);
+            resultFunction.setup(f.minX, f.maxX / 2, f.step);
 
             for (int i = 0; i < resultFunction.Length; i++)
             {
-                resultFunction[i] = output[i].Magnitude;
+                resultFunction[i] = output[i].Magnitude * 2;
             }
 
             return resultFunction;
@@ -66,6 +66,11 @@ namespace FourierTransformation
             Backward = -1
         };
 
+        /// <summary>
+        /// Вычисление дискретного преобразования Фурье
+        /// </summary>
+        /// <param name="f">Функция для преобразования</param>
+        /// <returns>Преобразование Фурье для функции</returns>
         private Complex[] DFT(Complex[] data, Direction direction)
         {
             int n = data.Length;
