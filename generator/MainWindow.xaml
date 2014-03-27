@@ -27,7 +27,7 @@
         </Menu>
         
               
-        <StackPanel Grid.Row="1">            
+        <StackPanel Grid.Row="1" x:Name="paramsContent" VerticalAlignment="Top">            
             <TextBlock Text="Параметры генерирования" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
             <ContentControl x:Name="generalFormControl">
                 <StackPanel>
