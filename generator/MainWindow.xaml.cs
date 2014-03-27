@@ -62,11 +62,37 @@ namespace Generator
             generatorSelector = new PluginSelector(typeof(IGenerator));
             generatorSelectorControl.Content = generatorSelector;
 
+            if (generatorSelector.Children[0] is ComboBox)
+            {
+                ComboBox com = generatorSelector.Children[0] as ComboBox;
+                com.Loaded += UpdateWindow;
+                com.SelectionChanged += UpdateWindow;
+            }
+
             noiseForm = new Form(noise);
             noiseFormControl.Content = noiseForm;
 
             noiseSelector = new PluginSelector(typeof(INoise));
-            noiseSelectorControl.Content = noiseSelector;            
+            noiseSelectorControl.Content = noiseSelector;
+
+            if (noiseSelector.Children[0] is ComboBox)
+            {
+                ComboBox com = generatorSelector.Children[0] as ComboBox;
+                com.Loaded += UpdateWindow;
+                com.SelectionChanged += UpdateWindow;
+            }
+        }
+
+        /// <summary>
+        /// Переопределение минимального размера окна
+        /// </summary>
+        /// <param name="sender">Источник события</param>
+        /// <param name="e"></param>
+        private void UpdateWindow(object sender, EventArgs e)
+        {
+            paramsContent.UpdateLayout();
+            this.MinHeight = paramsContent.ActualHeight + 70;
+            this.MinWidth = paramsContent.ActualWidth + 500;
         }
 
         /// <summary>

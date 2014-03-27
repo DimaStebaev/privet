@@ -20,7 +20,7 @@ namespace EnergyCalculation
     {
         private Random rand = new Random();
         private int maxCount = 5000000;         // Максимальное количество итераций
-        private double maxTime = 200;           // Максимальное время работы, в миллисекундах
+        private double maxTime = 50;           // Максимальное время работы, в миллисекундах
 
         public override string title
         {
@@ -47,7 +47,7 @@ namespace EnergyCalculation
             double energy = 0;
             int i = 0;
             DateTime start = DateTime.Now;
-            TimeSpan time = start - DateTime.Now;
+            TimeSpan time = DateTime.Now - start;
 
             while(i < maxCount && time.Milliseconds < maxTime)
             {
@@ -55,7 +55,7 @@ namespace EnergyCalculation
                 energy += Math.Pow(f.getValue(x), 2);
                 i++;
                 if (i % 1000 == 0)
-                    time = start - DateTime.Now;
+                    time = DateTime.Now - start;
             }
           
             return energy / i;
