@@ -43,14 +43,46 @@ namespace FourierTransformation
             output = DFT(input, Direction.Forward);
 
             Common.Function resultFunction = new Common.Function();
-            resultFunction.setup(f.minX, f.maxX / 2, f.step);
+            resultFunction.setup(f.minX, f.maxX, f.step*10);
 
-            for (int i = 0; i < resultFunction.Length; i++)
+            for (int i = 0; i < Math.Min(output.Length, resultFunction.Length); i++)
             {
                 resultFunction[i] = output[i].Magnitude * 2;
             }
 
-            return resultFunction;
+            //обрезать края функции, где значения меньше, чем 1/100 от максимального значения функции
+
+            if(resultFunction.Length < 1) throw new Exception("Wrong result of DFT");
+            double maxValue = resultFunction[0];
+            for (int i = 1; i < resultFunction.Length; i++)
+                maxValue = Math.Max(maxValue, resultFunction[i]);
+
+            int begin = -1, end = 0;
+            for (int i = 0; i < resultFunction.Length; i++ )
+                if(resultFunction[i] > maxValue/100)
+                {
+                    if (begin < 0)
+                        begin = i;
+                    end = i;
+                }
+
+            if(begin == end)
+            {
+                if(begin > 0) begin--;
+                else
+                {
+                    if(end + 1 >= resultFunction.Length)
+                        throw new Exception("Error in DFT result cutting");
+                    end++;
+                }
+            }
+
+            Common.Function cuttedResult = new Common.Function();
+            cuttedResult.setup(begin * resultFunction.step, end * resultFunction.step, resultFunction.step);
+            for (int i = begin; i <= end && i - begin < cuttedResult.Length; i++)
+                cuttedResult[i - begin] = resultFunction[i];
+
+            return cuttedResult;
         }
 
         public enum Direction
