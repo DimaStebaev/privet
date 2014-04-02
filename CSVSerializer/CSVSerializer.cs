@@ -77,8 +77,10 @@ namespace CSVSerializer
         /// <returns>Function</returns>
         public virtual Function deserialize(string filename)
         {
+            string format = Path.GetExtension(filename).ToLower();
             //Check file existence
-            if (File.Exists(filename))
+            if (File.Exists(filename) &&
+                format == ".csv")
             {
                 Function functionToReadIn = new Function();
                 StreamReader fileStream = new StreamReader(filename);

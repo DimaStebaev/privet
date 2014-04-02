@@ -256,6 +256,10 @@ namespace Generator
                 CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
                 functionGraph.DataSource = compositeDataSource;                
             }
+            else
+            {
+                functionGraph.DataSource = new CompositeDataSource();
+            }
 
             if (noisedF!=null)
             {
@@ -273,7 +277,11 @@ namespace Generator
                 CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
 
                 noisedFunctionGraph.DataSource = compositeDataSource;                
-            }           
+            }
+            else
+            {
+                noisedFunctionGraph.DataSource = new CompositeDataSource();
+            }
 
             chart.LegendVisible = false;
             chart.FitToView();
@@ -324,17 +332,25 @@ namespace Generator
                 String filename = dialog.FileName;
                 string[] splitted = filename.Split('.');
                 string ext = splitted[splitted.Length - 1];
-
-                foreach(IPlugin plugin in plugins)
+                try
                 {
-                    ISerializer s = plugin as ISerializer;
-                    if(s.extension.Equals(ext))
+                    foreach (IPlugin plugin in plugins)
                     {
-                        generatedFunction = s.deserialize(filename);
-                        EtalonFunction = null;
-                        drawFunction(EtalonFunction, generatedFunction);
-                        return;
+                        ISerializer s = plugin as ISerializer;
+                        if (s.extension.Equals(ext))
+                        {
+                            generatedFunction = s.deserialize(filename);
+                            EtalonFunction = null;
+                            drawFunction(EtalonFunction, generatedFunction);
+                            return;
+                        }
                     }
+                }
+                catch(Exception ex)
+                {
+                    logger.Error("Loading function error: " + ex.ToString());
+                    MessageBox.Show(ex.Message.ToString());
+                    return;
                 }
 
                 logger.Error("Loading function error");
