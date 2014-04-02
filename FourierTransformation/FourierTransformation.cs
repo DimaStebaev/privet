@@ -43,7 +43,7 @@ namespace FourierTransformation
             output = DFT(input, Direction.Forward);
 
             Common.Function resultFunction = new Common.Function();
-            resultFunction.setup(f.minX, f.maxX, f.step*10);
+            resultFunction.setup(f.minX, f.maxX, f.step*10);                        
 
             for (int i = 0; i < Math.Min(output.Length, resultFunction.Length); i++)
             {

@@ -24,20 +24,12 @@
         </Menu>
 
         <StackPanel x:Name="controlPanel" Grid.Row="1">
-            <TextBlock Text="Обработчик" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>                
+            <TextBlock Text="Обработчик" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>                                                        
             <ContentControl x:Name="processorSelectorControl">
                 <StackPanel>
-                    <ComboBox Margin="5" >
-                        <ComboBoxItem Content="first" IsSelected="True"/>
-                        <ComboBoxItem Content="second"/>
-                        <ComboBoxItem Content="third"/>
-                    </ComboBox>
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Параметр 1" Width="90" Margin="5" VerticalAlignment="Center"/>
-                            <TextBox Width="60" Margin="5"></TextBox>
-                        </StackPanel>
-                    </StackPanel>
+                    <CheckBox Content="first" IsChecked="True"/>
+                    <CheckBox Content="second"/>
+                    <CheckBox Content="third"/>
                 </StackPanel>
             </ContentControl>
             <Button x:Name="generateButton" Content="Обработать" Margin="5" Click="processButton_Click"/>

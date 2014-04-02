@@ -26,35 +26,32 @@ namespace Processor
     {
         public MainWindow()
         {
-            InitializeComponent();   
-         
+            InitializeComponent();
+
+            windowCaption = "";
+
             refreshControlPanel();
         }
 #region Fields
-
-        PluginSelector processorSelector = null;
+        
         static Logger logger = LogManager.GetCurrentClassLogger();
         Function _processedFunction = null;
         PluginManager pluginManager = PluginManager.getPluginManager();
 
         Function processedFunction
         {
-            get
-            {
-                return _processedFunction;
+            get { return _processedFunction; }
+            set {
+                _processedFunction = value;                
             }
-            set
-            {
-                _processedFunction = value;
+        }
 
-                if(_processedFunction == null)
-                {
-                    generateButton.IsEnabled = false;
-                }
-                else
-                {
-                    generateButton.IsEnabled = true;
-                }
+        string windowCaption
+        {
+            set { 
+                this.Title = "Обработчик";
+                if (value != null && value != "")
+                    this.Title += " - " + value;
             }
         }
 
@@ -67,29 +64,40 @@ namespace Processor
         /// </summary>
         private void refreshControlPanel()
         {
-            processorSelector = new PluginSelector(typeof(IProcessor));
-            processorSelectorControl.Content = processorSelector;
-
-            processedFunction = processedFunction;
-        }
-
-        private bool validateInputs()
-        {
-            IList<string> errors = processorSelector.getErrors();
-
-            if (errors.Count > 0)
+            StackPanel sp = new StackPanel();
+            
+            foreach(IPlugin processor in pluginManager.getBeans(typeof(IProcessor)))
             {
-                string errorMessage = "";
-                foreach (string line in errors)
-                {
-                    if (errorMessage != "") errorMessage += Environment.NewLine;
-                    errorMessage += line;
-                }
-                MessageBox.Show(errorMessage);
-                return false;
+                if (processor == null) continue;
+
+                CheckBox chbx = new CheckBox();
+                chbx.Content = processor.title;
+
+                chbx.IsChecked = true;
+                chbx.Tag = processor;
+
+                chbx.Margin = new Thickness(5);
+
+                sp.Children.Add(chbx);                
             }
-            else
-                return true;
+            
+            processorSelectorControl.Content = sp;            
+        }        
+
+        private List<IProcessor> getSelectedProcessors()
+        {
+            List<IProcessor> selectedProcessors = new List<IProcessor>();
+
+            if (!(processorSelectorControl.Content is StackPanel)) return selectedProcessors;
+
+
+
+            foreach (UIElement element in (processorSelectorControl.Content as StackPanel).Children)
+                if (element is CheckBox && element != null)
+                    if ((bool)(element as CheckBox).IsChecked)
+                        selectedProcessors.Add((element as CheckBox).Tag as IProcessor);
+
+            return selectedProcessors;
         }
 
 #region Buttons handles
@@ -99,17 +107,34 @@ namespace Processor
         /// </summary>        
         private void processButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!validateInputs()) return;            
+            IList<IProcessor> selectedProcessors = getSelectedProcessors();
+            if(selectedProcessors.Count == 0)
+            {
+                MessageBox.Show("Не выбрано ни одного обработчика");
+                return;
+            }
+
+            if(processedFunction == null)
+                MenuItemLoad_Click(this, new RoutedEventArgs());
+
+            if (processedFunction == null)
+                return;
 
             try
             {
-                IProcessor processor = processorSelector.getSelectedPlugin() as IProcessor;
-                processor.setup(processorSelector.getPluginParametersValues());
+                StackPanel resultStackPanel = new StackPanel();
 
-                ProcessingManager pm = new ProcessingManager();
-                UIElement result = pm.process(processor, processedFunction);
+                foreach(IProcessor processor in selectedProcessors)
+                {
+                    processor.setup(new List<Object>());
 
-                resultControl.Content = result;
+                    ProcessingManager pm = new ProcessingManager();
+                    UIElement result = pm.process(processor, processedFunction);
+
+                    resultStackPanel.Children.Add(result);
+                }                                
+
+                resultControl.Content = resultStackPanel;
             }
             catch(Exception ex)
             {
@@ -168,7 +193,10 @@ namespace Processor
                     ISerializer s = plugin as ISerializer;
                     if (s.extension.Equals(ext))
                     {
-                        processedFunction = s.deserialize(filename);                        
+                        processedFunction = s.deserialize(filename);
+
+                        windowCaption = "загружен файл " + filename;
+
                         return;
                     }
                 }

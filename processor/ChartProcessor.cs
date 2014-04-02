@@ -38,10 +38,9 @@ namespace Processor
             var xDataSource = x.AsXDataSource();
             var yDataSource = y.AsYDataSource();
 
-            CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);
+            CompositeDataSource compositeDataSource = xDataSource.Join(yDataSource);            
             
-            plotter.AddLineGraph(compositeDataSource);
-            plotter.LegendVisible = false;
+            plotter.AddLineGraph(compositeDataSource, System.Windows.Media.Colors.Blue, 3, title);              
 
             return (UIElement)plotter;
         }
