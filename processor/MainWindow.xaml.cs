@@ -42,7 +42,8 @@ namespace Processor
         {
             get { return _processedFunction; }
             set {
-                _processedFunction = value;                
+                _processedFunction = value;
+                resultControl.Content = null;
             }
         }
 
@@ -84,6 +85,9 @@ namespace Processor
             processorSelectorControl.Content = sp;            
         }        
 
+        /// <summary>
+        /// Возвращает список процессорво, которые выбрал пользователь в UI.
+        /// </summary>        
         private List<IProcessor> getSelectedProcessors()
         {
             List<IProcessor> selectedProcessors = new List<IProcessor>();
