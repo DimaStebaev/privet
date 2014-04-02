@@ -192,19 +192,27 @@ namespace Processor
                 string[] splitted = filename.Split('.');
                 string ext = splitted[splitted.Length - 1];
 
-                foreach (IPlugin plugin in plugins)
+                try
                 {
-                    ISerializer s = plugin as ISerializer;
-                    if (s.extension.Equals(ext))
+                    foreach (IPlugin plugin in plugins)
                     {
-                        processedFunction = s.deserialize(filename);
+                        ISerializer s = plugin as ISerializer;
+                        if (s.extension.Equals(ext))
+                        {
+                            processedFunction = s.deserialize(filename);
 
-                        windowCaption = "загружен файл " + filename;
+                            windowCaption = "загружен файл " + filename;
 
-                        return;
+                            return;
+                        }
                     }
                 }
-
+                catch(Exception ex)
+                {
+                    logger.Error("CSVSerializer error:" + ex.ToString());
+                    MessageBox.Show(ex.Message.ToString());
+                    return;
+                }
                 logger.Error("Loading function error");
                 MessageBox.Show("Ошибка во время загрузки данных");
             }
