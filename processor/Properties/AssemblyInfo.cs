@@ -10,10 +10,10 @@ using System.Windows;
 [assembly: AssemblyTitle("processor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("KNU University FKN KS-51 2014")]
 [assembly: AssemblyProduct("processor")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright ©  2014, Stebaev, Makarenko, Pugachev, Velicodnyu, Budlanska, Rudecheva")]
+[assembly: AssemblyTrademark("FKN")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
